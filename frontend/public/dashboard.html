@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/regl/2.1.1/regl.min.js"></script>
+  <style>
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Welcome</h2>
+      <nav>
+        <ul>
+          <li><a href="#overview" class="active">Overview</a></li>
+          <li><a href="#users">Users</a></li>
+          <li><a href="#orders">Orders</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#settings">Settings</a></li>
+          <li><a href="/api/admin/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+<div class="theme-toggle" id="themeToggle">
+    <span class="light">☀️</span>
+    <span class="Dark">🌙</span>
+    </div>
+    <!-- Main Content -->
+     
+    <main class="main-content">
+      <!-- Overview Section -->
+      <section id="overview">
+        <h1>Dashboard Overview</h1>
+        <div class="stats-cards">
+          <div class="card">
+            <h3>Total Users</h3>
+            <p id="total-users">0</p>
+          </div>
+          <div class="card">
+            <h3>Total Orders</h3>
+            <p id="total-orders">0</p>
+          </div>
+          <div class="card">
+            <h3>Revenue</h3>
+            <p id="total-revenue">$0</p>
+          </div>
+        </div>
+
+        <div class="charts">
+          <canvas id="ordersChart" width="400" height="200"></canvas>
+        </div>
+      </section>
+      <!-- Users Section -->
+      <section id="users">
+        <h1>Users</h1>
+        <table id="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Registered</th>
+              <th>Image</th>
+              <th>password</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+        <div id="users-pagination" class="pagination"></div>
+      </section>
+
+      <!-- Orders Section -->
+      <section id="orders">
+        <h1>Orders</h1>
+        <input type="text" id="order-search" placeholder="Search by Phone or ID..." style="margin-bottom: 15px; padding: 8px; width: 300px;">
+        <button id="clear-search" style="padding: 8px; margin-left: 5px; cursor: pointer;">Clear</button>
+       <table id="orders-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Phone</th>
+      <th>Location</th>
+      <th>Payment Method</th>
+      <th>Status</th>
+      <th>Total</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Dynamic rows -->
+  </tbody>
+</table>
+         <div id="pagination" class="pagination"></div>
+      </section>
+
+      <!-- Products Section -->
+      <section id="products">
+        <h1>Products</h1>
+
+        <!-- Add Product Form -->
+        <form id="addProductForm">
+          <input type="text" id="name" placeholder="Product Name" required />
+          <input type="text" id="category" placeholder="Category" required />
+          <input type="number" id="price" placeholder="Price" required />
+          <input type="number" id="quantity" placeholder="Quantity" required />
+          <input type="text" id="image" placeholder="Image URL" />
+          <input type="text" id="image2" placeholder="Second Image URL" />
+          <textarea id="description" placeholder="Description"></textarea>
+          <button type="submit">Add Product</button>
+        </form>
+
+        <!-- Products Table -->
+        <table id="products-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Image</th>
+              <th>Image2</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic rows populated by JS -->
+          </tbody>
+        </table>
+        <div id="products-pagination" class="pagination"></div>
+      </section>
+
+      <!-- Settings Section -->
+      <section id="settings">
+        <h1>Settings</h1>
+        <p>Settings options will go here.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/java.js"></script>
+  <script>
+    // Immediate Auth Guard check on page load
+    (function() {
+      const token = localStorage.getItem('token');
+      if (!token || token === 'undefined') {
+        window.location.href = '/admin-login.html';
+      }
+    })();
+  </script>
+  <script src="/js/add-product.js"></script> <!-- logic for add/edit/delete -->
+<script src="/js/orders.js"></script>
+<script src="/js/users.js"></script>
+
+<script>
+  let statsChart = null;
+
+  // ✅ Fix broken images (handles 404s and malformed URLs)
+  document.addEventListener('error', function(e) {
+    if (e.target.tagName.toLowerCase() === 'img') {
+      e.target.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2250%22%20height%3D%2250%22%20viewBox%3D%220%200%2050%2050%22%3E%3Crect%20width%3D%2250%22%20height%3D%2250%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-size%3D%2212%22%20fill%3D%22%23aaa%22%3ENo%20Img%3C%2Ftext%3E%3C%2Fsvg%3E'; 
+      e.target.alt = 'User Image';
+    }
+  }, true);
+
+  // Tab Switching Logic
+  document.addEventListener("DOMContentLoaded", () => {
+    const links = document.querySelectorAll(".sidebar nav ul li a");
+    const sections = document.querySelectorAll("main section");
+
+    function showSection(id) {
+      // Hide all sections
+      sections.forEach(sec => sec.style.display = "none");
+      // Show target section
+      const target = document.querySelector(id);
+      if (target) target.style.display = "block";
+    }
+
+    links.forEach(link => {
+      link.addEventListener("click", (e) => {
+        const href = link.getAttribute("href");
+        if (href.startsWith("#")) {
+          e.preventDefault();
+          // Update active class
+          links.forEach(l => l.classList.remove("active"));
+          link.classList.add("active");
+          showSection(href);
+        }
+      });
+    });
+
+    // Show default section (Overview) or based on hash
+    const hash = window.location.hash || "#overview";
+    showSection(hash);
+    
+    // Set active link based on hash
+    const activeLink = document.querySelector(`.sidebar nav ul li a[href="${hash}"]`);
+    if (activeLink) activeLink.classList.add("active");
+  });
+
+  // Load Dashboard Stats
+  async function loadStats() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await fetch('/api/admin/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      // Handle expired or invalid token
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/admin-login.html';
+        return;
+      }
+
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById('total-users').textContent = data.users;
+        document.getElementById('total-orders').textContent = data.orders;
+        document.getElementById('total-revenue').textContent = 'KES ' + Number(data.revenue).toLocaleString();
+        
+        initChart(data);
+      }
+    } catch (err) {
+      console.error('Error loading stats:', err);
+    }
+  }
+
+  function initChart(stats) {
+    const ctx = document.getElementById('ordersChart').getContext('2d');
+    const isDark = document.body.classList.contains('dark-theme');
+    
+    const config = {
+      type: 'bar',
+      data: {
+        labels: ['Users', 'Orders'],
+        datasets: [{
+          label: 'Platform Statistics',
+          data: [stats.users, stats.orders],
+          backgroundColor: ['#17c166', '#c9119b'],
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: getChartScales(isDark),
+        plugins: {
+          legend: { labels: { color: isDark ? '#fff' : '#333' } }
+        }
+      }
+    };
+
+    if (statsChart) statsChart.destroy();
+    statsChart = new Chart(ctx, config);
+  }
+
+  function getChartScales(isDark) {
+    const color = isDark ? '#ccc' : '#666';
+    const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
+    return {
+      y: { ticks: { color }, grid: { color } },
+      x: { ticks: { color }, grid: { display: false } }
+    };
+  }
+
+  // Theme Toggle Logic integrated with Chart
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    
+    if (statsChart) {
+      // Update chart colors without re-fetching data
+      statsChart.options.scales = getChartScales(isDark);
+      statsChart.options.plugins.legend.labels.color = isDark ? '#fff' : '#333';
+      statsChart.update();
+    }
+    
+    // Save preference
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+    loadStats();
+  });
+</script>
+</body>
+</html>

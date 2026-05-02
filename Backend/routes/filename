@@ -1,0 +1,73 @@
+// ================== AUTH TOKEN ==================
+const usersToken = localStorage.getItem('token');
+
+if (!usersToken || usersToken === 'undefined') {
+  // This script runs on the dashboard, so if the token is missing,
+  // other scripts would have already redirected. We can just log an error.
+  console.error('Admin token not found. Users cannot be loaded.');
+}
+
+// ================== LOAD USERS ==================
+async function loadUsers(page = 1) {
+  if (!usersToken || usersToken === 'undefined') return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/users?page=${page}&limit=10`, {
+      headers: {
+        Authorization: `Bearer ${usersToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Fetch failed: ${res.status} ${errText}`);
+    }
+
+    const result = await res.json();
+    const users = result.data;
+    const tbody = document.querySelector("#users-table tbody");
+
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (!users || users.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" style="text-align:center;">No users found</td>
+        </tr>
+      `;
+      return;
+    }
+
+    users.forEach(user => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${user.id}</td>
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${new Date(user.created_at).toLocaleDateString()}</td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    // Note: Pagination for users is not implemented yet.
+
+  } catch (err) {
+    console.error('Failed to load users:', err);
+    const tbody = document.querySelector("#users-table tbody");
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" style="text-align:center; color: red;">Failed to load users.</td>
+        </tr>
+      `;
+    }
+  }
+}
+
+// ================== INIT ==================
+window.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('users-table')) {
+    loadUsers();
+  }
+});

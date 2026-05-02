@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnlineShop | Register</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">Online<span>Shop</span></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="about.html">About</a>
+      <a href="login.html" class="active">Login</a>
+    </nav>
+    <div class="theme-toggle" id="themeToggle">
+      <span class="light">☀️</span>
+      <span class="Dark">🌙</span>
+    </div>
+  </header>
+
+  <div class="login-container">
+    <h2>Register</h2>
+    <form id="register-form">
+      <label for="username">Username:</label>
+      <input type="text" id="username" placeholder="David, Eric" name="username" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" placeholder="07**" name="phone" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <script src="/js/Register.js"></script>
+  </body>
+  </html>

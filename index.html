@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We value Quality | Enterprise Online Shop</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Online<span>Shop</span></div>
+
+  <nav>
+    <a href="index.html" class="active">Home</a>
+    <a href="products.html">Products</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">login</a>
+  </nav>
+
+  <div class="theme-toggle" id="themeToggle">
+    <span class="light">☀️</span>
+    <span class="Dark">🌙</span>
+  </div>
+</header>
+
+<!-- ✅ HERO SECTION (Combined Image and Text) -->
+<section class="hero">
+  <img src="/uploads/-fresh-eggs.jpg" alt="hero">
+  <div class="hero-content">
+    <h1>Chicken Poa Poultry Farm</h1>
+    <p>We supply Healthy chicks, Fresh farm eggs, and Quality Meat at affordable prices.</p>
+    <button class="btn-shop-link" onclick="location.href='products.html'">Shop Now</button>
+  </div>
+</section>
+
+<!-- ✅ SHOP CATEGORIES -->
+<section class="categories">
+  <h2>Shop by Category</h2>
+<div class="product-container">
+
+    <div class="product-card" data-category="chicks">
+      <div class="image-container">
+        <img src="/uploads/avatar-1772481817747.jpg" alt="Day Old Chicks">
+        <img src="/uploads/avatar-1772481817747.jpg" alt="Day Old Chicks">
+      </div>
+  <h3>Day Old Chicks</h3>
+  <p class="price">Healthy and vaccinated chicks</p>
+  <button class="btn-shop-link" onclick="location.href='products.html'">View Products</button>
+    </div>
+
+    <div class="product-card" data-category="eggs">
+      <div class="image-container">
+        <img src="\uploads\-fresh-eggs.jpg"
+ alt="eggs 1">
+        <img src="\uploads\-eggs.jpg" alt="eggs 2">
+      </div>
+  <h3>Fresh Eggs</h3>
+  <p class="price">Farm fresh table and fertilized eggs</p>
+  <button class="btn-shop-link" onclick="location.href='products.html'">View Products</button>
+    </div>
+
+    <div class="product-card" data-category="meat">
+      <div class="image-container">
+        <img src="\uploads\meat.jpg" alt="Meat 1">
+        <img src="\uploads\OIP-540579553.jpg" alt="Meat 2">
+      </div>
+      <h3>Chicken Meat</h3>
+      <p class="price">Organic and processed poultry meat</p>
+      <button class="btn-shop-link" onclick="location.href='products.html'">View Products</button>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ FEATURED PRODUCTS -->
+<section class="featured">
+  <div class="product-container">
+    <p>Discover our best-selling poultry products.</p>
+</div>
+</section>
+<script src="js/java.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const authBtn = document.getElementById('authBtn');
+    const user = localStorage.getItem('user');
+
+    if (user) {
+      authBtn.textContent = 'Logout';
+      authBtn.onclick = () => {
+        localStorage.removeItem('user');
+        window.location.reload();
+      };
+    } else {
+      authBtn.textContent = 'Login';
+      authBtn.onclick = () => window.location.href = 'login.html';
+    }
+  });
+</script>
+<footer>© 2025 onlineshop. All Rights Reserved.Developed and Managed By Dero</footer>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 2em; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 1em; }
+    label { display: block; margin-bottom: 0.5em; font-weight: bold; }
+    input { width: 100%; padding: 0.8em; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 0.8em 1.5em; cursor: pointer; border-radius: 4px; font-size: 1em; }
+    #mpesa-btn { background-color: #4CAF50; color: white; border: none; width: 100%; }
+    #mpesa-btn:disabled { background-color: #aaa; }
+    #summary { border: 1px solid #eee; padding: 1em; margin-bottom: 2em; border-radius: 4px; }
+    #message { margin-top: 1em; padding: 1em; border-radius: 5px; display: none; }
+    .success { background-color: #d4edda; color: #155724; }
+    .error { background-color: #f8d7da; color: #721c24; }
+    .info { background-color: #cce5ff; color: #004085; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Checkout</h1>
+    
+    <div id="summary">
+      <h2>Order Summary</h2>
+      <ul id="order-items"></ul>
+      <p><strong>Total: KES <span id="order-total">0</span></strong></p>
+    </div>
+
+    <form id="checkout-form">
+      <div class="form-group">
+        <label for="phone">M-Pesa Phone Number (e.g., 0712345678)</label>
+        <input type="tel" id="phone" name="phone" required>
+      </div>
+      <div class="form-group">
+        <label for="location">Delivery Location</label>
+        <input type="text" id="location" name="location" required>
+      </div>
+      
+      <button type="button" id="mpesa-btn">Pay with M-Pesa</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <script src="/js/checkout.js"></script>
+</body>
+</html>

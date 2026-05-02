@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Cart | AgroGrow</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">Agro<span>Grow</span></div>
+</header>
+
+<nav>
+  <a href="products.html">Products</a>
+  <a href="cart.html" class="active">My Order</a>
+  <a href="checkout.html">Checkout</a>
+</nav>
+
+<h2>Your Cart</h2>
+
+<table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price (KES)</th>
+      <th>Qty</th>
+      <th>Total</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="cartBody">
+    <!-- Cart items inserted here -->
+  </tbody>
+</table>
+
+<h3>Total: KES <span id="grandTotal">0</span></h3>
+
+<button onclick="goToCheckout()">Proceed to Checkout</button>
+
+<footer>
+  AgroGrow Shop.com — All Rights Reserved
+</footer>
+
+<script src="js/cart.js"></script>
+</body>
+</html>

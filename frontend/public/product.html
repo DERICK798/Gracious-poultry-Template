@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Product</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h1>Admin - Add Product</h1>
+
+<form id="add-product-form">
+  <label>Name</label>
+  <input type="text" id="name" required>
+
+  <label>Price</label>
+  <input type="number" id="price" step="0.01" required>
+
+  <label>Category</label>
+  <input type="text" id="category">
+
+  <label>Image URL</label>
+  <input type="text" id="image">
+
+  <label>Quantity</label>
+  <input type="number" id="quantity" min="1" value="1" required>
+
+  <button type="submit">Add Product</button>
+</form>
+
+<script src="/js/add-product.js"></script>
+</body>
+</html>
