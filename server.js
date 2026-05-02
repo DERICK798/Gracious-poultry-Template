@@ -14,10 +14,11 @@ const adminRoutes = require('./Backend/routes/admin.routes');
 const app = express();
 
 app.use(cors({
-    origin: true,
-    credentials: true
+    origin: "https://derick798.github.io", 
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
