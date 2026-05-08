@@ -4,7 +4,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
 
-  const API_URL = window.location.origin.includes('5000') ? '' : 'http://localhost:5000';
+  const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
 
   try {
     // Hapa ndipo tunatumia POST method

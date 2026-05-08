@@ -32,7 +32,7 @@ app.use(session({
 }));
 
 // frontend files
-app.use(express.static(path.join(__dirname, 'frontend', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')));
 // Serving uploads from the root project directory to match Multer config
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 

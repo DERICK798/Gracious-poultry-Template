@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
+
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const user = JSON.parse(localStorage.getItem("user")); // For logged-in users
 
@@ -66,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const orderRes = await fetch('/api/orders', {
+      const orderRes = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({
@@ -89,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Step 2: Initiate STK Push with the new orderId and backend-verified total
       showMessage("Order created. Sending payment request to your phone...", "info");
       console.log("🛒 [Checkout] Initiating STK Push...");
-      const mpesaRes = await fetch('/api/mpesa/pay', {
+      const mpesaRes = await fetch(`${API_URL}/api/mpesa/pay`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({ phone, amount: total, orderId })
