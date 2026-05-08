@@ -27,7 +27,7 @@ if (typeof document !== 'undefined') {
       };
 
       try {
-        const res = await fetch('/api/products', {
+        const res = await fetch(`${API_URL}/api/products`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ function renderProductPagination(page, totalPages) {
 async function loadProducts(page = 1) {
   currentPage = page;
   try {
-    const res = await fetch(`/api/products?page=${page}&limit=10`, {
+    const res = await fetch(`${API_URL}/api/products?page=${page}&limit=10`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) {
@@ -158,7 +158,7 @@ async function deleteProduct(id) {
   if (!confirm('Delete this product?')) return;
 
   try {
-    const res = await fetch(`/api/products/${id}`, {
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -195,7 +195,7 @@ async function updateProduct(id) {
   }
 
   try {
-    const res = await fetch(`/api/products/${id}`, {
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

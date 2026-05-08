@@ -61,7 +61,7 @@ async function loadOrders(page = 1, searchQuery = null) {
 console.log("ORDER TOKEN:", orderToken);
 
   try {
-    const res = await fetch(`/api/orders?page=${page}&limit=${limit}&search=${encodeURIComponent(currentSearchQuery)}`, {
+    const res = await fetch(`${API_URL}/api/orders?page=${page}&limit=${limit}&search=${encodeURIComponent(currentSearchQuery)}`, {
       headers: {
         Authorization: `Bearer ${orderToken}`,
       },
@@ -155,7 +155,7 @@ console.log("ORDER TOKEN:", orderToken);
 // ================== VIEW ITEMS ==================
 async function viewOrderItems(id) {
   try {
-    const res = await fetch(`/api/orders/${id}`, {
+    const res = await fetch(`${API_URL}/api/orders/${id}`, {
       headers: { Authorization: `Bearer ${orderToken}` }
     });
     const order = await res.json();
@@ -179,7 +179,7 @@ async function updateOrderStatus(id, status) {
   if (!confirm(`Mark order #${id} as ${status}?`)) return;
 
   try {
-    const res = await fetch(`/api/orders/${id}/status`, {
+    const res = await fetch(`${API_URL}/api/orders/${id}/status`, {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ async function deleteOrder(id) {
   if (!confirm('Delete this order?')) return;
 
   try {
-    const res = await fetch(`/api/orders/${id}`, {
+    const res = await fetch(`${API_URL}/api/orders/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${orderToken}` }
     });

@@ -71,8 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     formData.append('avatar', file);
 
     try {
-      // Fixed: Using the absolute URL for the API server
-      const res = await fetch('http://localhost:5000/api/users/upload-avatar', {
+      const res = await fetch(`${API_URL}/api/users/upload-avatar`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -81,8 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
 
-      // Update UI with the full URL from the server
-      const fullImageUrl = `http://localhost:5000${data.imageUrl}`;
+      const fullImageUrl = `${API_URL}${data.imageUrl}`;
       profileImg.src = fullImageUrl;
       user.profile_picture = data.imageUrl;
       localStorage.setItem('user', JSON.stringify(user));
@@ -105,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loadOrders = async (page = 1) => {
     const limit = 5; // You can adjust this limit
     try {
-      const res = await fetch(`/api/orders/my-orders?page=${page}&limit=${limit}`, {
+      const res = await fetch(`${API_URL}/api/orders/my-orders?page=${page}&limit=${limit}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

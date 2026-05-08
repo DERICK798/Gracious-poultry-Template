@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
 
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const user = JSON.parse(localStorage.getItem("user")); // For logged-in users

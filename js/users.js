@@ -43,7 +43,7 @@ async function loadUsers(page = 1) {
   if (!usersToken || usersToken === 'undefined') return;
 
   try {
-    const res = await fetch(`/api/users?page=${page}&limit=10`, {
+    const res = await fetch(`${API_URL}/api/users?page=${page}&limit=10`, {
       headers: {
         Authorization: `Bearer ${usersToken}`,
       },

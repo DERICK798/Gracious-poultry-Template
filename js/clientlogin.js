@@ -17,8 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const credentials = { emailOrPhone, password };
 
-    const API_URL = window.location.origin.includes('5000') ? '' : 'http://localhost:5000';
-
     try {
       // 2️⃣ Send POST request to login endpoint
       const res = await fetch(`${API_URL}/api/users/login`, {
