@@ -1,6 +1,4 @@
-// GLOBAL CART
-var API_URL = API_URL || (window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com');
-
+// GLOBAL CARt
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 function addToCart(product, qty) {
