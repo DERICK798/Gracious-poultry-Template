@@ -1,4 +1,6 @@
 // GLOBAL CART
+const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
+
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 function addToCart(product, qty) {
@@ -106,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
 //fetch of products
 
 function fetchProducts() {
-  const API_URL = window.location.origin.includes('5000') ? '' : 'http://localhost:5000';
   fetch(`${API_URL}/api/products`)
     .then(res => res.json())
     .then(products => renderProducts(products))
@@ -157,14 +158,14 @@ function renderProducts(products) {
       if (images.length > 1) {
         imageHTML = `
           <div class="image-container">
-              <img src="/uploads/${images[0]}" alt="${product.name}" class="main-product-image">
+              <img src="${API_URL}/uploads/${images[0]}" alt="${product.name}" class="main-product-image">
           </div>
           <div class="image-previews">
-              ${images.map(img => `<img src="/uploads/${img}" alt="preview" class="preview-thumb">`).join('')}
+              ${images.map(img => `<img src="${API_URL}/uploads/${img}" alt="preview" class="preview-thumb">`).join('')}
           </div>
         `;
       } else if (images.length > 0) {
-        imageHTML = `<img src="/uploads/${images[0]}" alt="${product.name}">`;
+        imageHTML = `<img src="${API_URL}/uploads/${images[0]}" alt="${product.name}">`;
       }
 
       // --- Price & Discount Logic ---

@@ -1,6 +1,8 @@
 // public/js/Register.js
 
 document.addEventListener('DOMContentLoaded', () => {
+  const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
+
   const form = document.getElementById('register-form');
 
   form.addEventListener('submit', async (e) => {
@@ -20,8 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3️⃣ Prepare payload
     const user = { username, email, phone, password };
-
-    const API_URL = window.location.origin.includes('5000') ? '' : 'http://localhost:5000';
 
     try {
       // 4️⃣ Send POST request to backend

@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
+
     const loginForm = document.getElementById('login-form');
     const errorMessage = document.getElementById('error-message');
 
@@ -9,9 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
-            // Determine if we need to use the full URL or relative path
-            const API_URL = window.location.origin.includes('5000') ? '' : 'http://localhost:5000';
 
             try {
                 const response = await fetch(`${API_URL}/api/admin/login`, {

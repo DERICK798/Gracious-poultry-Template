@@ -14,7 +14,7 @@ const adminRoutes = require('./routes/admin.routes');
 const app = express();
 
 app.use(cors({
-    origin: "https://derick798.github.io", 
+    origin: "https://gracious-poultry-onlineshop.onrender.com", 
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]

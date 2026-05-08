@@ -1,4 +1,6 @@
 // Helper function to render pagination controls
+const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
+
 function renderOrdersPagination(page, totalPages, loadOrdersFn) {
   const paginationContainer = document.getElementById('orders-pagination');
   if (!paginationContainer) {
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 1. Load existing image if available
   if (user.profile_picture) {
-    profileImg.src = user.profile_picture;
+    profileImg.src = user.profile_picture.startsWith('http') ? user.profile_picture : `${API_URL}${user.profile_picture}`;
     // Handle broken image links (e.g. if placeholder site is down)
     profileImg.onerror = function() {
         this.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22150%22%20height%3D%22150%22%20viewBox%3D%220%200%20150%20150%22%3E%3Crect%20width%3D%22150%22%20height%3D%22150%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-size%3D%2220%22%20fill%3D%22%23aaa%22%3EUser%3C%2Ftext%3E%3C%2Fsvg%3E';
@@ -71,8 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     formData.append('avatar', file);
 
     try {
-      // Fixed: Using the absolute URL for the API server
-      const res = await fetch('http://localhost:5000/api/users/upload-avatar', {
+      const res = await fetch(`${API_URL}/api/users/upload-avatar`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -81,8 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
 
-      // Update UI with the full URL from the server
-      const fullImageUrl = `http://localhost:5000${data.imageUrl}`;
+      // Use relative path for the image
+      const fullImageUrl = `${API_URL}${data.imageUrl}`;
       profileImg.src = fullImageUrl;
       user.profile_picture = data.imageUrl;
       localStorage.setItem('user', JSON.stringify(user));
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loadOrders = async (page = 1) => {
     const limit = 5; // You can adjust this limit
     try {
-      const res = await fetch(`/api/orders/my-orders?page=${page}&limit=${limit}`, {
+      const res = await fetch(`${API_URL}/api/orders/my-orders?page=${page}&limit=${limit}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
