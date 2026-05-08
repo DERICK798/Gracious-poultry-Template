@@ -8,7 +8,7 @@ const { authMiddleware } = require('../middleware/authMiddleware');
 // Configure Storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/uploads/avatars/');
+        cb(null, 'uploads/avatars/');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
