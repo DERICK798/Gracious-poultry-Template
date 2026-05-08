@@ -33,7 +33,7 @@ app.use(session({
 
 // frontend files
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
-app.use("/uploads", express.static(path.join(__dirname,'frontend',"uploads")));
+app.use("/uploads", express.static(path.join(__dirname,"uploads")));
 
 // APIs
 app.use('/api/auth', authRoutes);
