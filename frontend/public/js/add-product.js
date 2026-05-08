@@ -1,5 +1,5 @@
 // ================== AUTH TOKEN ==================
-const API_URL = window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com';
+var API_URL = API_URL || (window.location.origin.includes('5000') ? '' : 'https://gracious-poultry-onlineshop.onrender.com');
 const token = localStorage.getItem('token');
 
 if (!token) {
