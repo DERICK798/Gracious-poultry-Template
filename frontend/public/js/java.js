@@ -152,7 +152,12 @@ function renderProducts(products) {
 
       // --- Image Preview Logic ---
       const images = [product.image, product.image2].filter(Boolean);
-      const getImgPath = (img) => img.startsWith('http') ? img : (img.startsWith('/uploads') ? `${API_URL}${img}` : `${API_URL}/uploads/${img}`);
+      const getImgPath = (img) => {
+        if (!img) return '';
+        if (img.startsWith('http')) return img;
+        const cleanPath = img.replace(/^\/?(uploads\/)?/, ''); // Remove leading slash and 'uploads/' prefix if present
+        return `${API_URL}/uploads/${cleanPath}`;
+      };
 
       let imageHTML = '';
       if (images.length > 1) {
@@ -165,7 +170,11 @@ function renderProducts(products) {
           </div>
         `;
       } else if (images.length > 0) {
-        imageHTML = `<img src="${getImgPath(images[0])}" alt="${product.name}">`;
+        imageHTML = `
+          <div class="image-container">
+            <img src="${getImgPath(images[0])}" alt="${product.name}" class="main-product-image">
+          </div>
+        `;
       }
 
       // --- Price & Discount Logic ---
