@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="clientAuthGuard.js"></script>
+<script src="js/config.js"></script>
+<script src="js/clientAuthGuard.js"></script>
   <title>Products | OnlineShop</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -16,7 +17,7 @@
     <a href="products.html" class="active">Products</a>
     <a href="about.html">About</a>
     <a href="cart.html">my order</a>
-     <a href="login.html">login</a>
+     <a href="login.html" id="authBtn">login</a>
   </nav>
   <div class="theme-toggle" id="themeToggle">
     <span class="light">☀️</span>
@@ -46,7 +47,6 @@
 <!-- ✅ GRID STARTS HERE -->
 
 <div class="product-container" id="products-container"></div>
-<script src="js/config.js"></script>
 <script src="js/java.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
