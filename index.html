@@ -84,16 +84,6 @@
 <script src="js/java.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // ✅ Fix static images to point to backend
-    document.querySelectorAll('img').forEach(img => {
-      const src = img.getAttribute('src');
-      if (src && !src.startsWith('http') && !src.startsWith('data:')) {
-        // Ensure path starts with API_URL and clean up double slashes
-        const cleanPath = src.startsWith('/') ? src : '/' + src;
-        img.src = `${API_URL}${cleanPath}`;
-      }
-    });
-
     const authBtn = document.getElementById('authBtn');
     const user = localStorage.getItem('user');
 

@@ -101,6 +101,15 @@ const categoryFilter = document.getElementById('categoryFilter');
 const searchInput = document.getElementById('searchInput');
 
 document.addEventListener("DOMContentLoaded", () => {
+  // ✅ Automatically prefix all local images with API_URL
+  document.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src');
+    if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+      const cleanPath = src.startsWith('/') ? src : '/' + src;
+      img.src = `${API_URL}${cleanPath}`;
+    }
+  });
+
   fetchProducts();
 });
 //fetch of products
