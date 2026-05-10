@@ -17,7 +17,7 @@
     <a href="products.html">Products</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
-    <a href="login.html">login</a>
+    <a href="login.html" id="authBtn">login</a>
   </nav>
 <div id="userName"></div>
   <div class="theme-toggle" id="themeToggle">
@@ -43,8 +43,8 @@
 
     <div class="product-card" data-category="chicks">
       <div class="image-container">
-        <img src="uploads/avatar-1772481817747.jpg" alt="Day Old Chicks">
-        <img src="uploads/avatar-1772481817747.jpg" alt="Day Old Chicks">
+        <img src="uploads/avatars/avatar-1772481817747.jpg" alt="Day Old Chicks">
+        <img src="uploads/avatars/avatar-1772481817747.jpg" alt="Day Old Chicks">
       </div>
   <h3>Day Old Chicks</h3>
   <p class="price">Healthy and vaccinated chicks</p>
@@ -80,9 +80,20 @@
     <p>Discover our best-selling poultry products.</p>
 </div>
 </section>
+<script src="frontend/public/js/config.js"></script>
 <script src="js/java.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // ✅ Fix static images to point to backend
+    document.querySelectorAll('img').forEach(img => {
+      const src = img.getAttribute('src');
+      if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+        // Ensure path starts with API_URL and clean up double slashes
+        const cleanPath = src.startsWith('/') ? src : '/' + src;
+        img.src = `${API_URL}${cleanPath}`;
+      }
+    });
+
     const authBtn = document.getElementById('authBtn');
     const user = localStorage.getItem('user');
 

@@ -146,6 +146,14 @@ function renderProducts(products) {
     row.className = "product-row";
 
     grouped[category].forEach(product => {
+      // --- Image Path Helper ---
+      const getImgPath = (img) => {
+        if (!img) return '';
+        if (img.startsWith('http')) return img;
+        const cleanPath = img.replace(/^\/?(uploads\/)?/, ''); 
+        return `${API_URL}/uploads/${cleanPath}`;
+      };
+
       const card = document.createElement("div");
       card.className = "product-card";
       card.setAttribute('data-category', product.category || '');
@@ -157,14 +165,14 @@ function renderProducts(products) {
       if (images.length > 1) {
         imageHTML = `
           <div class="image-container">
-              <img src="${API_URL}/uploads/${images[0]}" alt="${product.name}" class="main-product-image">
+              <img src="${getImgPath(images[0])}" alt="${product.name}" class="main-product-image">
           </div>
           <div class="image-previews">
-              ${images.map(img => `<img src="${API_URL}/uploads/${img}" alt="preview" class="preview-thumb">`).join('')}
+              ${images.map(img => `<img src="${getImgPath(img)}" alt="preview" class="preview-thumb">`).join('')}
           </div>
         `;
       } else if (images.length > 0) {
-        imageHTML = `<img src="${API_URL}/uploads/${images[0]}" alt="${product.name}">`;
+        imageHTML = `<img src="${getImgPath(images[0])}" alt="${product.name}">`;
       }
 
       // --- Price & Discount Logic ---
