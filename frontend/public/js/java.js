@@ -105,7 +105,12 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src');
     if (src && !src.startsWith('http') && !src.startsWith('data:')) {
-      const cleanPath = src.startsWith('/') ? src : '/' + src;
+      // Remove 'uploads/' if it's already there to prevent double prefixing
+      let cleanPath = src.replace(/^(uploads\/|\/uploads\/)/, '');
+      // Ensure it starts with a slash
+      cleanPath = cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath;
+      // Add /uploads/ back in a controlled way
+      cleanPath = '/uploads' + cleanPath;
       img.src = `${API_URL}${cleanPath}`;
     }
   });
@@ -164,8 +169,8 @@ function renderProducts(products) {
       const getImgPath = (img) => {
         if (!img) return '';
         if (img.startsWith('http')) return img;
-        const cleanPath = img.replace(/^\/?(uploads\/)?/, ''); // Remove leading slash and 'uploads/' prefix if present
-        return `${API_URL}/uploads/${cleanPath}`;
+        const cleanPath = img.replace(/^(uploads\/|\/uploads\/)/, ''); 
+        return `${API_URL}/uploads/${cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath}`;
       };
 
       let imageHTML = '';
