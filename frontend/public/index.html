@@ -80,23 +80,6 @@
 </div>
 </section>
 <script src="js/config.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const authBtn = document.getElementById('authBtn');
-    const user = localStorage.getItem('user');
-
-    if (user) {
-      authBtn.textContent = 'Logout';
-      authBtn.onclick = () => {
-        localStorage.removeItem('user');
-        window.location.reload();
-      };
-    } else {
-      authBtn.textContent = 'Login';
-      authBtn.onclick = () => window.location.href = 'login.html';
-    }
-  });
-</script>
 <script src="js/java.js"></script>
 <footer>© 2025 onlineshop. All Rights Reserved.Developed and Managed By Dero</footer>
 
