@@ -34,6 +34,15 @@ function renderOrdersPagination(page, totalPages, loadOrdersFn) {
   paginationContainer.appendChild(nextBtn);
 }
 
+// Helper function to normalize image paths and prevent broken URLs
+const getImgPath = (img) => {
+  if (!img) return '';
+  if (img.startsWith('http') || img.startsWith('data:')) return img;
+  if (typeof API_URL === 'undefined') return img;
+  const cleanPath = img.startsWith('/') ? img : '/' + img;
+  return `${API_URL}${cleanPath}`;
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
@@ -72,7 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     formData.append('avatar', file);
 
     try {
-      const res = await fetch(`${API_URL}/api/users/upload-avatar`, {
+      const url = `${typeof API_URL !== 'undefined' ? API_URL : ''}/api/users/upload-avatar`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -105,7 +115,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loadOrders = async (page = 1) => {
     const limit = 5; // You can adjust this limit
     try {
-      const res = await fetch(`${API_URL}/api/orders/my-orders?page=${page}&limit=${limit}`, {
+      const url = `${typeof API_URL !== 'undefined' ? API_URL : ''}/api/orders/my-orders?page=${page}&limit=${limit}`;
+      const res = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
