@@ -9,7 +9,7 @@ const usersController = require('../controllers/users.controller');
 // Configure Multer for image upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../frontend/uploads/')); 
+    cb(null, path.join(__dirname, '../../uploads/')); 
   },
   filename: (req, file, cb) => {
     cb(null, 'avatar-' + Date.now() + path.extname(file.originalname));
