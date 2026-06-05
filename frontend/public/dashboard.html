@@ -117,8 +117,10 @@
           <input type="text" id="category" placeholder="Category" required />
           <input type="number" id="price" placeholder="Price" required />
           <input type="number" id="quantity" placeholder="Quantity" required />
-          <input type="text" id="image" placeholder="Image URL" />
-          <input type="text" id="image2" placeholder="Second Image URL" />
+          <label for="image" style="display:block; margin-top:10px;">Main Product Image:</label>
+          <input type="file" id="image" accept="image/*" />
+          <label for="image2" style="display:block; margin-top:10px;">Secondary Image (Optional):</label>
+          <input type="file" id="image2" accept="image/*" />
           <textarea id="description" placeholder="Description"></textarea>
           <button type="submit">Add Product</button>
         </form>

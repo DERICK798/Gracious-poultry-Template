@@ -23,8 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = { username, email, phone, password };
 
     try {
+      const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
       // 4️⃣ Send POST request to backend
-      const res = await fetch(`${API_URL}/api/users/register`, {
+      const res = await fetch(`${baseUrl}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user)

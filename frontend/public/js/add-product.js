@@ -16,24 +16,31 @@ if (typeof document !== 'undefined') {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const product = {
-        name: document.getElementById("name").value.trim(),
-        category: document.getElementById("category").value.trim(),
-        price: document.getElementById("price").value,
-        description: document.getElementById("description").value.trim(),
-        image: document.getElementById("image").value.trim(),
-        image2: document.getElementById("image2").value.trim(),
-        quantity: document.getElementById("quantity")?.value || 0
-      };
+      // Use FormData to support binary file uploads
+      const formData = new FormData();
+      formData.append('name', document.getElementById("name").value.trim());
+      formData.append('category', document.getElementById("category").value.trim());
+      formData.append('price', document.getElementById("price").value);
+      formData.append('description', document.getElementById("description").value.trim());
+      formData.append('quantity', document.getElementById("quantity")?.value || 0);
+
+      // Append files if selected
+      const imageFile = document.getElementById("image").files[0];
+      const image2File = document.getElementById("image2").files[0];
+      
+      if (imageFile) formData.append('image', imageFile);
+      if (image2File) formData.append('image2', image2File);
 
       try {
-        const res = await fetch(`${API_URL}/api/products`, {
+        const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
+        const res = await fetch(`${baseUrl}/api/products`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            // NOTE: Do NOT set 'Content-Type' header when sending FormData. 
+            // The browser will automatically set it to multipart/form-data with the correct boundary.
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(product)
+          body: formData
         });
 
         const data = await res.json();
@@ -90,7 +97,8 @@ function renderProductPagination(page, totalPages) {
 async function loadProducts(page = 1) {
   currentPage = page;
   try {
-    const res = await fetch(`${API_URL}/api/products?page=${page}&limit=10`, {
+    const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
+    const res = await fetch(`${baseUrl}/api/products?page=${page}&limit=10`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) {

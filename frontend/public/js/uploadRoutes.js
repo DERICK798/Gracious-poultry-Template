@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const db = require('../config/db'); // Path to your DB connection
-const { authMiddleware } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middleware/auth.middleware');
 
 // Configure Storage
 const storage = multer.diskStorage({
