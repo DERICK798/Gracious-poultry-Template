@@ -1,12 +1,29 @@
 // ================== AUTH TOKEN ==================
 const token = localStorage.getItem('token');
 
-if (!token) {
+if (!token || token === 'undefined') {
   alert('Please login as admin');
   window.location.href = '/admin-login.html';
 }
 
 let currentPage = 1;
+let allProducts = []; // Local cache to make editing easier
+
+// Helper function to escape HTML and prevent XSS
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  const p = document.createElement("p");
+  p.textContent = str;
+  return p.innerHTML;
+}
+
+// Helper to normalize image paths and prevent broken URLs
+const getImgPath = (img) => {
+  if (!img) return '';
+  if (img.startsWith('http') || img.startsWith('data:')) return img;
+  const cleanPath = img.startsWith('uploads/') ? img : 'uploads/' + img;
+  return `${API_URL}/${cleanPath}`;
+};
 
 // ================== ADD PRODUCT ==================
 if (typeof document !== 'undefined') {
@@ -116,36 +133,44 @@ async function loadProducts(page = 1) {
 
     const result = await res.json();
     // Handle both paginated { data: [...] } and flat [...] responses
-    const products = result.data || (Array.isArray(result) ? result : []);
+    allProducts = result.data || (Array.isArray(result) ? result : []);
     const totalPages = result.totalPages || 0;
     const currentPageNum = result.page || 1;
     const tbody = document.querySelector('#products-table tbody');
 
     if (!tbody) return;
-
     tbody.innerHTML = '';
 
-    if (!products || products.length === 0) {
+    if (!allProducts || allProducts.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No products found</td></tr>';
       return;
     }
 
-    products.forEach(p => {
+    allProducts.forEach(p => {
       const row = document.createElement('tr');
-
-      const imageUrl = p.image ? `${API_URL}/${p.image.startsWith('uploads/') ? p.image : 'uploads/' + p.image}` : 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2250%22%20height%3D%2250%22%20viewBox%3D%220%200%2050%2050%22%3E%3Crect%20width%3D%2250%22%20height%3D%2250%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-size%3D%2210%22%20fill%3D%22%23aaa%22%3ENo%20Img%3C%2Ftext%3E%3C%2Fsvg%3E';
-      const image2Url = p.image2 ? `${API_URL}/${p.image2.startsWith('uploads/') ? p.image2 : 'uploads/' + p.image2}` : 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2250%22%20height%3D%2250%22%20viewBox%3D%220%200%2050%2050%22%3E%3Crect%20width%3D%2250%22%20height%3D%2250%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-size%3D%2210%22%20fill%3D%22%23aaa%22%3ENo%20Img%3C%2Ftext%3E%3C%2Fsvg%3E';
+      const placeholder = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2250%22%20height%3D%2250%22%20viewBox%3D%220%200%2050%2050%22%3E%3Crect%20width%3D%2250%22%20height%3D%2250%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-size%3D%2210%22%20fill%3D%22%23aaa%22%3ENo%20Img%3C%2Ftext%3E%3C%2Fsvg%3E';
+      
+      const imageUrl = getImgPath(p.image) || placeholder;
+      const image2Url = getImgPath(p.image2) || placeholder;
 
       row.innerHTML = `
-        <td>${p.name}</td>
-        <td>${p.price}</td>
-        <td>${p.category}</td>
-        <td>${p.quantity}</td>
-        <td><img src="${imageUrl}" alt="${p.name}" style="width: 50px; height: 50px;"></td>
-        <td><img src="${image2Url}" alt="${p.name} 2" style="width: 50px; height: 50px;"></td>
+        <td><strong>${escapeHTML(p.name)}</strong></td>
+        <td>KES ${escapeHTML(String(p.price))}</td>
+        <td>${escapeHTML(p.category)}</td>
+        <td>${escapeHTML(String(p.quantity))}</td>
         <td>
-          <button onclick="updateProduct(${p.id})">Edit</button>
-          <button onclick="deleteProduct(${p.id})">Delete</button>
+          <img src="${imageUrl}" alt="${escapeHTML(p.name)}" 
+               style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" 
+               onerror="this.onerror=null;this.src='${placeholder}';">
+        </td>
+        <td>
+          <img src="${image2Url}" alt="${escapeHTML(p.name)} 2" 
+               style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" 
+               onerror="this.onerror=null;this.src='${placeholder}';">
+        </td>
+        <td style="white-space: nowrap;">
+          <button onclick="updateProduct(${p.id})" style="padding: 8px 12px; margin-bottom: 4px;">Edit</button>
+          <button onclick="deleteProduct(${p.id})" style="padding: 8px 12px; background: #dc3545; color: white;">Delete</button>
         </td>
       `;
       tbody.appendChild(row);
@@ -189,17 +214,28 @@ async function deleteProduct(id) {
 
 // ================== UPDATE PRODUCT ==================
 async function updateProduct(id) {
-  const name = prompt('New name:');
-  const price = parseFloat(prompt('New price:'));
-  const category = prompt('New category:');
-  const quantity = parseInt(prompt('New quantity:'));
-  const image = prompt('New image URL:');
-  const image2 = prompt('New image2 URL:');
-  const description = prompt('New description:');
-
-  if (!name || isNaN(price) || !category || !image || isNaN(quantity)) {
-    alert('Invalid input');
+  const p = allProducts.find(item => item.id === id);
+  if (!p) {
+    alert('Product not found in current list. Please refresh.');
     return;
+  }
+
+  // Mobile users: Pre-filling the prompts makes it much easier to edit just one field
+  const name = prompt('Update name:', p.name);
+  if (name === null) return; // User cancelled the process
+
+  const priceInput = prompt('Update price:', p.price);
+  const category = prompt('Update category:', p.category);
+  const quantityInput = prompt('Update quantity:', p.quantity);
+  const image = prompt('Update image path:', p.image);
+  const image2 = prompt('Update image2 path:', p.image2);
+  const description = prompt('Update description:', p.description);
+
+  const price = parseFloat(priceInput);
+  const quantity = parseInt(quantityInput);
+
+  if (!name || isNaN(price) || !category || isNaN(quantity)) {
+    return alert('Invalid input. Name, Price, Category, and Quantity are required.');
   }
 
   try {
