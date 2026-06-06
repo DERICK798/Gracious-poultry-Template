@@ -33,13 +33,21 @@ if (typeof document !== 'undefined') {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const nameVal = document.getElementById("name").value.trim();
+      const categoryVal = document.getElementById("category").value.trim();
+
+      if (!nameVal || nameVal.toLowerCase() === 'null') {
+        alert("Please enter a valid product name.");
+        return;
+      }
+
       // Use FormData to support binary file uploads
       const formData = new FormData();
-      formData.append('name', document.getElementById("name").value.trim());
-      formData.append('category', document.getElementById("category").value.trim());
+      formData.append('name', nameVal);
+      formData.append('category', categoryVal);
       formData.append('price', document.getElementById("price").value);
       formData.append('description', document.getElementById("description").value.trim());
-      formData.append('quantity', document.getElementById("quantity")?.value || 0);
+      formData.append('quantity', document.getElementById("quantity").value || 0);
 
       // Append files if selected
       const imageFile = document.getElementById("image").files[0];
@@ -49,8 +57,7 @@ if (typeof document !== 'undefined') {
       if (image2File) formData.append('image2', image2File);
 
       try {
-        const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
-        const res = await fetch(`${API_URL}/api/products`, {
+        const res = await fetch(`${API_URL}/api/products`, { // Ensure plural endpoint
           method: 'POST',
           headers: {
             // NOTE: Do NOT set 'Content-Type' header when sending FormData. 

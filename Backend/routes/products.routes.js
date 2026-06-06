@@ -3,13 +3,18 @@ const router = express.Router();
 const db = require('../config/db');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const authMiddleware = require('../middleware/auth.middleware');
 const adminOnly = require('../middleware/admin.middleware');
 
 // Configure storage for product images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/uploads/'); 
+    const dir = 'public/uploads/';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir); 
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -19,12 +24,18 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // admin routes
+// POST /api/products
 router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), async (req, res) => {
   try {
-    const { name, category, price, description, quantity } = req.body;
+    // Ensure values are present and not the literal string "null"
+    const name = req.body.name === 'null' ? null : req.body.name;
+    const category = req.body.category === 'null' ? null : req.body.category;
+    const price = req.body.price ? parseFloat(req.body.price) : 0;
+    const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
+    const description = req.body.description || '';
     
-    const image = req.files['image'] ? req.files['image'][0].filename : null;
-    const image2 = req.files['image2'] ? req.files['image2'][0].filename : null;
+    const image = (req.files && req.files['image']) ? req.files['image'][0].filename : null;
+    const image2 = (req.files && req.files['image2']) ? req.files['image2'][0].filename : null;
 
     // Check if product already exists
     const [existing] = await db.promise().query("SELECT id, price FROM product WHERE name = ?", [name]);
@@ -59,10 +70,16 @@ router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxC
   }
 });
 
+// PUT /api/products/:id
 router.put('/:id', authMiddleware, adminOnly, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, category, price, description, image, image2, quantity } = req.body;
+    const name = req.body.name === 'null' ? null : req.body.name;
+    const category = req.body.category === 'null' ? null : req.body.category;
+    const price = req.body.price ? parseFloat(req.body.price) : 0;
+    const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
+    const { description, image, image2 } = req.body;
+
     await db.promise().query(
       "UPDATE product SET name=?, category=?, price=?, description=?, image=?, image2=?, quantity=? WHERE id=?",
       [name, category, price, description, image, image2, quantity, id]
