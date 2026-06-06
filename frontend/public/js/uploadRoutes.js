@@ -3,19 +3,15 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const db = require('../config/db'); // Path to your DB connection
-const authMiddleware = require('../middleware/auth.middleware');
-
-// Configure Storage
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/avatars/');
+ destination: (req, file, cb) => {
+        cb(null, 'public/uploads/avatars/');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
-
 const upload = multer({ 
     storage: storage,
     limits: { fileSize: 2 * 1024 * 1024 }, // Limit to 2MB
