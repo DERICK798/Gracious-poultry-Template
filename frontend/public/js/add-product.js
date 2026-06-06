@@ -155,9 +155,9 @@ async function loadProducts(page = 1) {
 
       row.innerHTML = `
         <td><strong>${escapeHTML(p.name)}</strong></td>
-        <td>KES ${p.price != null ? escapeHTML(p.price) : '0'}</td>
+        <td>KES ${p.price != null && p.price !== '' ? escapeHTML(String(p.price)) : '0'}</td>
         <td>${escapeHTML(p.category)}</td>
-        <td>${p.quantity != null ? escapeHTML(p.quantity) : '0'}</td>
+        <td>${p.quantity != null && p.quantity !== '' ? escapeHTML(String(p.quantity)) : '0'}</td>
         <td>
           <img src="${imageUrl}" alt="${escapeHTML(p.name)}" 
                style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" 
@@ -221,15 +221,15 @@ async function updateProduct(id) {
   }
 
   // Mobile users: Pre-filling the prompts makes it much easier to edit just one field
-  const name = prompt('Update name:', p.name || '');
+  const name = prompt('Update name:', p.name && p.name !== 'null' ? p.name : '');
   if (name === null) return; // User cancelled the process
 
-  const priceInput = prompt('Update price:', p.price != null ? p.price : '');
-  const category = prompt('Update category:', p.category || '');
-  const quantityInput = prompt('Update quantity:', p.quantity != null ? p.quantity : '');
-  const image = prompt('Update image path:', p.image || '');
-  const image2 = prompt('Update image2 path:', p.image2 || '');
-  const description = prompt('Update description:', p.description || '');
+  const priceInput = prompt('Update price:', p.price != null && p.price !== 'null' ? p.price : '');
+  const category = prompt('Update category:', p.category && p.category !== 'null' ? p.category : '');
+  const quantityInput = prompt('Update quantity:', p.quantity != null && p.quantity !== 'null' ? p.quantity : '');
+  const image = prompt('Update image path:', p.image && p.image !== 'null' ? p.image : '');
+  const image2 = prompt('Update image2 path:', p.image2 && p.image2 !== 'null' ? p.image2 : '');
+  const description = prompt('Update description:', p.description && p.description !== 'null' ? p.description : '');
 
   const price = parseFloat(priceInput);
   const quantity = parseInt(quantityInput);

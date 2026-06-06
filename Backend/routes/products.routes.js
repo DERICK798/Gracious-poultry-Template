@@ -1,13 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const multer = require('multer');
+const path = require('path');
 const authMiddleware = require('../middleware/auth.middleware');
 const adminOnly = require('../middleware/admin.middleware');
 
+// Configure storage for product images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/'); 
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage });
+
 // admin routes
-router.post('/', authMiddleware, adminOnly, async (req, res) => {
+router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), async (req, res) => {
   try {
-    const { name, category, price, description, image, image2, quantity } = req.body;
+    const { name, category, price, description, quantity } = req.body;
+    
+    const image = req.files['image'] ? req.files['image'][0].filename : null;
+    const image2 = req.files['image2'] ? req.files['image2'][0].filename : null;
 
     // Check if product already exists
     const [existing] = await db.promise().query("SELECT id, price FROM product WHERE name = ?", [name]);
