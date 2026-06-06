@@ -117,7 +117,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fetchProducts();
 });
-//fetch of products
+
+// Helper function to escape HTML and prevent XSS
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  const p = document.createElement("p");
+  p.textContent = str;
+  return p.innerHTML;
+}
 
 function fetchProducts() {
   fetch(`${API_URL}/api/products`)
@@ -177,7 +184,7 @@ function renderProducts(products) {
       if (images.length > 1) {
         imageHTML = `
           <div class="image-container">
-              <img src="${getImgPath(images[0])}" alt="${product.name}" class="main-product-image">
+              <img src="${getImgPath(images[0])}" alt="${escapeHTML(product.name)}" class="main-product-image">
           </div>
           <div class="image-previews">
               ${images.map(img => `<img src="${getImgPath(img)}" alt="preview" class="preview-thumb">`).join('')}
@@ -186,14 +193,14 @@ function renderProducts(products) {
       } else if (images.length > 0) {
         imageHTML = `
           <div class="image-container">
-            <img src="${getImgPath(images[0])}" alt="${product.name}" class="main-product-image">
+            <img src="${getImgPath(images[0])}" alt="${escapeHTML(product.name)}" class="main-product-image">
           </div>
         `;
       }
 
       // --- Price & Discount Logic ---
       let priceHTML = '';
-      let finalPrice = parseFloat(product.price);
+      let finalPrice = parseFloat(product.price) || 0;
       const discount = parseFloat(product.discount);
 
       if (!isNaN(discount) && discount > 0) {
@@ -217,7 +224,7 @@ function renderProducts(products) {
 
       card.innerHTML = `
         ${imageHTML}
-        <h3>${product.name}</h3>
+        <h3>${escapeHTML(product.name)}</h3>
         <div class="rating">
           ${renderStars(product.rating || 0)}
           <span class="rating-value">(${product.rating || 0})</span>
