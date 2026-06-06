@@ -50,7 +50,7 @@ if (typeof document !== 'undefined') {
 
       try {
         const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
-        const res = await fetch(`${baseUrl}/api/products`, {
+        const res = await fetch(`${API_URL}/api/products`, {
           method: 'POST',
           headers: {
             // NOTE: Do NOT set 'Content-Type' header when sending FormData. 
