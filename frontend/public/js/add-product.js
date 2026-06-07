@@ -23,6 +23,10 @@ const getImgPath = (img) => {
   if (img.startsWith('http') || img.startsWith('data:')) return img;
   const cleanPath = img.startsWith('uploads/') ? img : 'uploads/' + img;
   return `${API_URL}/${cleanPath}`;
+
+  const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
+  const filename = img.replace(/^\/?(uploads\/)?/, ''); // Remove leading slash or 'uploads/' prefix
+  return `${baseUrl}/uploads/${filename}`;
 };
 
 // ================== ADD PRODUCT ==================
