@@ -21,18 +21,33 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage });
+
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit to 5MB
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png|webp/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    if (mimetype && extname) return cb(null, true);
+    cb(new Error("Only images (jpeg, png, webp) are allowed"));
+  }
+});
 
 // admin routes
 // POST /api/products
 router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), async (req, res) => {
   try {
     // Ensure values are present and not the literal string "null"
-    const name = req.body.name === 'null' ? null : req.body.name;
-    const category = req.body.category === 'null' ? null : req.body.category;
+    const name = (req.body.name === 'null' || !req.body.name) ? null : req.body.name.trim();
+    const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : req.body.category.trim();
     const price = req.body.price ? parseFloat(req.body.price) : 0;
     const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
     const description = req.body.description || '';
+
+    if (!name || price < 0 || quantity < 0) {
+      return res.status(400).json({ message: "Invalid product data: Name is required, price/quantity cannot be negative." });
+    }
     
     const image = (req.files && req.files['image']) ? req.files['image'][0].filename : null;
     const image2 = (req.files && req.files['image2']) ? req.files['image2'][0].filename : null;
@@ -74,11 +89,17 @@ router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxC
 router.put('/:id', authMiddleware, adminOnly, async (req, res) => {
   try {
     const { id } = req.params;
-    const name = req.body.name === 'null' ? null : req.body.name;
-    const category = req.body.category === 'null' ? null : req.body.category;
+    const name = (req.body.name === 'null' || !req.body.name) ? null : req.body.name.trim();
+    const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : req.body.category.trim();
     const price = req.body.price ? parseFloat(req.body.price) : 0;
     const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
-    const { description, image, image2 } = req.body;
+    const description = req.body.description || '';
+
+    // Sanitize image paths provided via body to prevent path traversal
+    const image = req.body.image ? path.basename(req.body.image) : null;
+    const image2 = req.body.image2 ? path.basename(req.body.image2) : null;
+
+    if (!name || price < 0) return res.status(400).json({ message: "Invalid name or price." });
 
     await db.promise().query(
       "UPDATE product SET name=?, category=?, price=?, description=?, image=?, image2=?, quantity=? WHERE id=?",

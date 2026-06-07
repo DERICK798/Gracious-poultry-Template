@@ -6,6 +6,33 @@ if (!token || token === 'undefined') {
   window.location.href = '/admin-login.html';
 }
 
+async function handleTokenRefresh() {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) return false;
+
+  try {
+    const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
+    const res = await fetch(`${baseUrl}/api/admin/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem('token', data.token);
+      // Update the local variable for the current execution context
+      return true;
+    }
+  } catch (err) {
+    console.error('Refresh token error:', err);
+  }
+
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  return false;
+}
+
 let currentPage = 1;
 let allProducts = []; // Local cache to make editing easier
 
@@ -129,10 +156,15 @@ async function loadProducts(page = 1) {
     if (!res.ok) {
       // Handle expired or invalid token
       if (res.status === 401 || res.status === 403) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/admin-login.html';
-        return;
+        const refreshed = await handleTokenRefresh();
+        if (refreshed) {
+          // Retry original request once with new token
+          return loadProducts(page);
+        } else {
+          localStorage.removeItem('user');
+          window.location.href = '/admin-login.html';
+          return;
+        }
       }
 
       const errorData = await res.json();

@@ -71,18 +71,46 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ message: 'Server configuration error' });
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: rows[0].id, role: 'admin' },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: '15m' }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: rows[0].id, role: 'admin' },
+      process.env.JWT_REFRESH_SECRET || 'refresh_secret_key',
+      { expiresIn: '7d' }
     );
 
     console.log('STEP 7: SEND RESPONSE');
-    return res.json({ token });
+    return res.json({ token: accessToken, refreshToken });
 
   } catch (err) {
     console.error('LOGIN ERROR:', err);
     return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Refresh Token Route
+router.post('/refresh-token', async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(401).json({ message: 'Refresh Token required' });
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'refresh_secret_key');
+    
+    // Generate new Access Token
+    const newAccessToken = jwt.sign(
+      { id: decoded.id, role: 'admin' },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    res.json({ token: newAccessToken });
+  } catch (err) {
+    console.error('REFRESH ERROR:', err);
+    res.status(403).json({ message: 'Invalid or expired Refresh Token' });
   }
 });
 
