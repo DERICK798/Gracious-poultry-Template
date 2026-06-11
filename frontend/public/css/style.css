@@ -70,7 +70,7 @@ header {
 /* About Section */
 .about-section {
     padding: 80px 20px;
-    background: #f8f9fa;
+    background: var(--bg);
 }
 
 .about-section .container {
@@ -80,19 +80,55 @@ header {
 
 .about-content {
     text-align: center;
+    padding: 40px;
+    background: var(--card);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.about-content:hover {
+    transform: translateY(-5px);
 }
 
 .about-content h2 {
     font-size: 2.5rem;
-    margin-bottom: 20px;
-    color: #2c3e50;
+    margin-bottom: 30px;
+    color: var(--text);
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.about-content h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: #27ae60;
+    border-radius: 2px;
 }
 
 .about-content p {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #555;
+    color: var(--text);
     margin-bottom: 20px;
+}
+
+.contact {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.contact a {
+    color: #25d366;
+    font-weight: bold;
+    text-decoration: underline;
 }
 /*Dark mode toggle */
 .theme-toggle {
