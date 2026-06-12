@@ -12,8 +12,12 @@ const productRoutes = require('./routes/products.routes');
 const userRoutes = require('./routes/users.routes');
 const adminRoutes = require('./routes/admin.routes');
 const app = express();
+
 app.use(cors({
-  origin: "https://derick798.github.io",
+  origin: [
+    "https://derick798.github.io", 
+    "https://gracious-poultry-onlineshop.onrender.com"
+  ],
   credentials: true
 }));
 app.use(express.json());
@@ -31,9 +35,12 @@ app.use(session({
     }
 }));
 
-// Prioritize Admin assets to avoid collisions with main frontend assets
+// Prioritize Admin assets. If not found, Express will 'next()' to the public static folder
 app.use('/js', express.static(path.join(__dirname, '..', 'js')));
+app.use('/js', express.static(path.join(__dirname, '..', 'frontend', 'public', 'js')));
+
 app.use('/css', express.static(path.join(__dirname, '..', 'css')));
+app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'public', 'css')));
 
 // Main frontend files
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')));
