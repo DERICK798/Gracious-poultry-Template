@@ -50,8 +50,16 @@ app.get('/', (req,res)=>{
    res.sendFile(path.join(__dirname, '..', 'frontend', 'public', 'index.html'));
 });
 
-app.get('/admin-login', (req, res) => {
-   res.sendFile(path.join(__dirname, '..', 'frontend', 'public', 'admin-login.html'));
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'dashboard.html'));
+});
+
+app.get(['/admin-login', '/admin-login.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'admin-login.html'));
+});
+
+app.get(['/admin-register', '/admin-register.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'admin-register.html'));
 });
 
 const PORT = process.env.PORT || 5000;
