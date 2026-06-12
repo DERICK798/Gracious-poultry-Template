@@ -33,6 +33,10 @@ app.use(session({
 
 // frontend files
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')));
+// Serve admin assets from the root directory
+app.use('/js', express.static(path.join(__dirname, '..', 'js')));
+app.use('/css', express.static(path.join(__dirname, '..', 'css')));
+
 // Serving uploads from the root project directory to match Multer config
 app.use("/uploads", express.static(path.join(__dirname, '../uploads')));
 

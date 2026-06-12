@@ -3,7 +3,7 @@ const orderToken = localStorage.getItem('token');
 
 if (!orderToken || orderToken === 'undefined') {
   alert('Please login as admin');
-  window.location.href = '/admin-login';
+  window.location.href = '/admin-login.html';
 }
 // ================== PAGINATION RENDER ==================
 function renderPagination(page, totalPages) {

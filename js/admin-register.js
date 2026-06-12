@@ -18,7 +18,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
 
     if (res.ok) {
       alert('✅ Admin Registered Successfully!');
-      window.location.href = '/admin-login'; // Peleka kwenye login
+      window.location.href = '/admin-login.html'; // Peleka kwenye login
     } else {
       alert('❌ Failed: ' + (data.message || 'Unknown error'));
     }
