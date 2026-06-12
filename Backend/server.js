@@ -33,10 +33,6 @@ app.use(session({
 
 // frontend files
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')));
-// Serve admin assets from the root directory
-app.use('/js', express.static(path.join(__dirname, '..', 'js')));
-app.use('/css', express.static(path.join(__dirname, '..', 'css')));
-
 // Serving uploads from the root project directory to match Multer config
 app.use("/uploads", express.static(path.join(__dirname, '../uploads')));
 
@@ -54,16 +50,8 @@ app.get('/', (req,res)=>{
    res.sendFile(path.join(__dirname, '..', 'frontend', 'public', 'index.html'));
 });
 
-app.get('/dashboard.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'dashboard.html'));
-});
-
-app.get(['/admin-login', '/admin-login.html'], (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'admin-login.html'));
-});
-
-app.get(['/admin-register', '/admin-register.html'], (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'admin-register.html'));
+app.get('/admin-login', (req, res) => {
+   res.sendFile(path.join(__dirname, '..', 'frontend', 'public', 'admin-login.html'));
 });
 
 const PORT = process.env.PORT || 5000;
