@@ -219,16 +219,25 @@ async function updateProduct(id) {
     return;
   }
 
-  // Autofill by providing the current value as the second argument to prompt()
-  const name = prompt('Update name:', p.name || '');
-  if (name === null) return; // Cancelled
+  // Autofill existing values into prompts for easier editing
+  let name = prompt('Update name:', p.name || '');
+  if (name === null) return; // User cancelled the edit
 
-  const price = parseFloat(prompt('Update price:', p.price || 0));
-  const category = prompt('Update category:', p.category || '');
-  const quantity = parseInt(prompt('Update quantity:', p.quantity || 0));
-  const image = prompt('Update image path/filename:', p.image || '');
-  const image2 = prompt('Update image2 path/filename:', p.image2 || '');
-  const description = prompt('Update description:', p.description || '');
+  let priceInput = prompt('Update price:', p.price != null ? p.price : '0');
+  let category = prompt('Update category:', p.category || '');
+  let quantityInput = prompt('Update quantity:', p.quantity != null ? p.quantity : '0');
+  
+  // Safeguard: If the prompt is cancelled or left blank, we keep the existing image filename
+  let image = prompt('Update image path/filename:', p.image || '');
+  if (image === null || image.trim() === '') image = p.image;
+
+  let image2 = prompt('Update image2 path/filename:', p.image2 || '');
+  if (image2 === null || image2.trim() === '') image2 = p.image2;
+
+  let description = prompt('Update description:', p.description || '');
+
+  const price = parseFloat(priceInput) || 0;
+  const quantity = parseInt(quantityInput) || 0;
 
   if (!name || isNaN(price) || !category || isNaN(quantity)) {
     alert('Invalid input');

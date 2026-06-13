@@ -5,7 +5,7 @@ const path = require('path');
 const db = require('../config/db'); // Path to your DB connection
 const storage = multer.diskStorage({
  destination: (req, file, cb) => {
-        cb(null, 'public/uploads/avatars/');
+        cb(null, 'uploads/avatars/');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

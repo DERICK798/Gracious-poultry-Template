@@ -173,27 +173,31 @@ function renderProducts(products) {
 
       // --- Image Preview Logic ---
       const images = [product.image, product.image2].filter(Boolean);
-      const getImgPath = (img) => {
-        if (!img) return '';
-        if (img.startsWith('http')) return img;
-        const cleanPath = img.replace(/^(uploads\/|\/uploads\/)/, ''); 
-        return `${API_URL}/uploads/${cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath}`;
+      
+      // Use a consistent helper that respects API_URL for absolute paths
+      const resolveImg = (img) => {
+        if (!img) return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjZWVlIi8+PC9zdmc+';
+        if (img.startsWith('http') || img.startsWith('data:')) return img;
+        
+        const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
+        const filename = img.replace(/^\/?(uploads\/)?/, ''); 
+        return `${baseUrl}/uploads/${filename}`;
       };
 
       let imageHTML = '';
       if (images.length > 1) {
         imageHTML = `
           <div class="image-container">
-              <img src="${getImgPath(images[0])}" alt="${escapeHTML(product.name)}" class="main-product-image">
+              <img src="${resolveImg(images[0])}" alt="${escapeHTML(product.name)}" class="main-product-image">
           </div>
           <div class="image-previews">
-              ${images.map(img => `<img src="${getImgPath(img)}" alt="preview" class="preview-thumb">`).join('')}
+              ${images.map(img => `<img src="${resolveImg(img)}" alt="preview" class="preview-thumb">`).join('')}
           </div>
         `;
       } else if (images.length > 0) {
         imageHTML = `
           <div class="image-container">
-            <img src="${getImgPath(images[0])}" alt="${escapeHTML(product.name)}" class="main-product-image">
+            <img src="${resolveImg(images[0])}" alt="${escapeHTML(product.name)}" class="main-product-image">
           </div>
         `;
       }

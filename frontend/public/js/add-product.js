@@ -47,7 +47,7 @@ function escapeHTML(str) {
 // Helper to normalize image paths and prevent broken URLs
 const getImgPath = (img) => {
   if (!img) return '';
-  if (img.startsWith('http') || img.startsWith('data:')) return img;
+  if (img.startsWith('http') || img.startsWith('data:') || img.startsWith('blob:')) return img;
   const baseUrl = typeof API_URL !== 'undefined' ? API_URL : '';
   const filename = img.replace(/^\/?(uploads\/)?/, ''); // Remove leading slash or 'uploads/' prefix
   return `${baseUrl}/uploads/${filename}`;
@@ -261,22 +261,24 @@ async function updateProduct(id) {
   }
 
   // Mobile users: Pre-filling the prompts makes it much easier to edit just one field
-  const name = prompt('Update name:', p.name && p.name !== 'null' ? p.name : '');
+  let name = prompt('Update name:', p.name && p.name !== 'null' ? p.name : '');
   if (name === null) return; // User cancelled the process
 
-  const priceInput = prompt('Update price:', p.price != null && p.price !== 'null' ? p.price : '');
-  const category = prompt('Update category:', p.category && p.category !== 'null' ? p.category : '');
-  const quantityInput = prompt('Update quantity:', p.quantity != null && p.quantity !== 'null' ? p.quantity : '');
-  const image = prompt('Update image path:', p.image && p.image !== 'null' ? p.image : '');
-  const image2 = prompt('Update image2 path:', p.image2 && p.image2 !== 'null' ? p.image2 : '');
-  const description = prompt('Update description:', p.description && p.description !== 'null' ? p.description : '');
+  let priceInput = prompt('Update price:', p.price != null ? p.price : '');
+  let category = prompt('Update category:', p.category || '');
+  let quantityInput = prompt('Update quantity:', p.quantity != null ? p.quantity : '');
+  
+  // Keep existing image if prompt is cancelled or empty to ensure permanence
+  let image = prompt('Update image path (filename only):', p.image || '');
+  if (image === null || image.trim() === '') image = p.image;
 
-  const price = parseFloat(priceInput);
-  const quantity = parseInt(quantityInput);
+  let image2 = prompt('Update image2 path (filename only):', p.image2 || '');
+  if (image2 === null || image2.trim() === '') image2 = p.image2;
 
-  if (!name || isNaN(price) || !category || isNaN(quantity)) {
-    return alert('Invalid input. Name, Price, Category, and Quantity are required.');
-  }
+  let description = prompt('Update description:', p.description || '');
+
+  const price = parseFloat(priceInput) || 0;
+  const quantity = parseInt(quantityInput) || 0;
 
   try {
     const res = await fetch(`${API_URL}/api/products/${id}`, {
