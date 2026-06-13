@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const session = require('express-session');
 
 const authRoutes = require('./routes/auth.routes');
@@ -46,7 +47,15 @@ app.use('/css', express.static(path.join(__dirname, '..', 'frontend', 'public', 
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'public')));
 
 // Serving uploads from the root project directory to match Multer config
-app.use("/uploads", express.static(path.join(__dirname, '../uploads')));
+const uploadsPath = path.join(__dirname, '..', 'uploads');
+
+// Ensure base directories exist to prevent "Folder not found" errors on upload
+['', 'avatars', 'products'].forEach(dir => {
+    const p = path.join(uploadsPath, dir);
+    if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+});
+
+app.use("/uploads", express.static(uploadsPath));
 
 // APIs
 app.use('/api/auth', authRoutes);
