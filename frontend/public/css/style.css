@@ -15,7 +15,7 @@ input:focus, textarea:focus {
 
 :root {
   --bg: white;
-  --text: #0d0c0cac;
+  --text: #0dd932ac;
   --card:white (234, 224, 224, 0.937);
   --header-bg:rgba(155, 202, 222, 0.989);
 }
@@ -459,7 +459,7 @@ section:nth-of-type(3) { animation-delay: .6s; }
 .product-card:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 12px 24px rgba(26, 77, 46, 0.25);
-  background: rgb(0, 0, 0);
+  background: rgb(176, 205, 216);
   border: 1px solid #1a4d2e;
 }
 
