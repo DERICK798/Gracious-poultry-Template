@@ -43,14 +43,14 @@ const deleteCloudinaryFile = async (imageUrl) => {
 router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), async (req, res) => {
   try {
     // Ensure values are present and not the literal string "null"
-    const name = (req.body.name === 'null' || !req.body.name) ? null : req.body.name.trim();
-    const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : req.body.category.trim();
-    const price = req.body.price ? parseFloat(req.body.price) : 0;
-    const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
-    const description = req.body.description || '';
+    const name = (req.body.name === 'null' || !req.body.name) ? null : String(req.body.name).trim();
+    const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : String(req.body.category).trim();
+    const price = parseFloat(req.body.price);
+    const quantity = parseInt(req.body.quantity);
+    const description = String(req.body.description || '').trim();
 
-    if (!name || price < 0 || quantity < 0) {
-      return res.status(400).json({ message: "Invalid product data: Name is required, price/quantity cannot be negative." });
+    if (!name || isNaN(price) || isNaN(quantity) || price < 0 || quantity < 0) {
+      return res.status(400).json({ message: "Invalid product data: Valid Name, Price, and Quantity are required." });
     }
     
     let image = null;
@@ -103,8 +103,8 @@ router.put('/:id', authMiddleware, adminOnly, upload.fields([{ name: 'image', ma
     const { id } = req.params;
     const name = (req.body.name === 'null' || !req.body.name) ? null : req.body.name.trim();
     const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : req.body.category.trim();
-    const price = req.body.price ? parseFloat(req.body.price) : 0;
-    const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
+    const price = parseFloat(req.body.price);
+    const quantity = parseInt(req.body.quantity);
     const description = req.body.description || '';
 
     // Get existing product to check for old images
@@ -139,7 +139,7 @@ router.put('/:id', authMiddleware, adminOnly, upload.fields([{ name: 'image', ma
       await deleteCloudinaryFile(oldProduct.image2);
     }
 
-    if (!name || price < 0) return res.status(400).json({ message: "Invalid name or price." });
+    if (!name || isNaN(price) || isNaN(quantity) || price < 0) return res.status(400).json({ message: "Invalid product data." });
 
     await db.promise().query(
       "UPDATE product SET name=?, category=?, price=?, description=?, image=?, image2=?, quantity=? WHERE id=?",

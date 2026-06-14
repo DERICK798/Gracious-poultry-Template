@@ -9,8 +9,7 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^2.0.3",
     "axios": "^1.13.5",
-    "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^2.2.2",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
