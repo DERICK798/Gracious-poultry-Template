@@ -1,10 +1,9 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const session = require('express-session');
-
 const authRoutes = require('./routes/auth.routes');
 const clientRoutes = require('./routes/client.routes');
 const mpesaRoutes = require('./routes/mpesa.routes');

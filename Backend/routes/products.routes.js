@@ -2,33 +2,37 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const streamifier = require('streamifier');
 const cloudinary = require('../config/cloudinary');
 const authMiddleware = require('../middleware/auth.middleware');
 const adminOnly = require('../middleware/admin.middleware');
 
-// Cloudinary Storage Configuration for Products
-const productStorage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'products',
-        allowed_formats: ['jpg', 'png', 'webp', 'jpeg']
-    }
-});
+// Helper to upload a buffer to Cloudinary via stream
+const streamUpload = (fileBuffer, folder) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder },
+            (error, result) => {
+                if (result) resolve(result);
+                else reject(error);
+            }
+        );
+        streamifier.createReadStream(fileBuffer).pipe(stream);
+    });
+};
 
-const upload = multer({ storage: productStorage });
+// Multer Memory Storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // Helper: Deletes files from Cloudinary by extracting public_id from URL
 const deleteCloudinaryFile = async (imageUrl) => {
   if (!imageUrl || !imageUrl.includes('cloudinary')) return;
   try {
-    // Example URL: https://res.cloudinary.com/demo/image/upload/v1/products/prod-123.png
-    const parts = imageUrl.split('/');
-    const fileNameWithExt = parts.pop();
-    const fileName = fileNameWithExt.split('.')[0];
-    const folder = parts.pop();
-    const publicId = `${folder}/${fileName}`;
-    await cloudinary.uploader.destroy(publicId);
+    const regex = /\/v\d+\/([^/]+\/[^.]+)\./;
+    const match = imageUrl.match(regex);
+    const publicId = match ? match[1] : null;
+    if (publicId) await cloudinary.uploader.destroy(publicId);
   } catch (err) {
     console.error(`Deletion failed: ${imageUrl}`, err);
   }
@@ -49,8 +53,16 @@ router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxC
       return res.status(400).json({ message: "Invalid product data: Name is required, price/quantity cannot be negative." });
     }
     
-    const image = (req.files && req.files['image']) ? req.files['image'][0].path : null;
-    const image2 = (req.files && req.files['image2']) ? req.files['image2'][0].path : null;
+    let image = null;
+    let image2 = null;
+    if (req.files) {
+      if (req.files['image']) {
+        image = (await streamUpload(req.files['image'][0].buffer, 'products')).secure_url;
+      }
+      if (req.files['image2']) {
+        image2 = (await streamUpload(req.files['image2'][0].buffer, 'products')).secure_url;
+      }
+    }
 
     // Check if product already exists
     const [existing] = await db.promise().query("SELECT id, price FROM product WHERE name = ?", [name]);
@@ -101,8 +113,19 @@ router.put('/:id', authMiddleware, adminOnly, upload.fields([{ name: 'image', ma
     const oldProduct = rows[0];
 
     // Handle new uploads or keep existing paths from body
-    let image = (req.files && req.files['image']) ? req.files['image'][0].path : req.body.image;
-    let image2 = (req.files && req.files['image2']) ? req.files['image2'][0].path : req.body.image2;
+    let image = req.body.image;
+    let image2 = req.body.image2;
+
+    if (req.files) {
+      if (req.files['image']) {
+        const result = await streamUpload(req.files['image'][0].buffer, 'products');
+        image = result.secure_url;
+      }
+      if (req.files['image2']) {
+        const result = await streamUpload(req.files['image2'][0].buffer, 'products');
+        image2 = result.secure_url;
+      }
+    }
 
     // Sanitize literal 'null' strings that might come from frontend prompts
     if (image === 'null') image = null;
@@ -132,6 +155,16 @@ router.put('/:id', authMiddleware, adminOnly, upload.fields([{ name: 'image', ma
 router.delete('/:id', authMiddleware, adminOnly, async (req, res) => {
   try {
     const { id } = req.params;
+
+    // 1. Get existing product to retrieve Cloudinary URLs
+    const [rows] = await db.promise().query("SELECT image, image2 FROM product WHERE id = ?", [id]);
+    if (rows.length > 0) {
+      const product = rows[0];
+      // 2. Delete associated images from Cloudinary
+      if (product.image) await deleteCloudinaryFile(product.image);
+      if (product.image2) await deleteCloudinaryFile(product.image2);
+    }
+
     await db.promise().query("DELETE FROM product WHERE id = ?", [id]);
     res.json({ message: "Product deleted successfully" });
   } catch (err) {

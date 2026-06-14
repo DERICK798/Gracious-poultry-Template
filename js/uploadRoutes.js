@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const streamifier = require('streamifier');
 const cloudinary = require('../Backend/config/cloudinary');
 const db = require('../config/db'); // Path to your DB connection
 const { authMiddleware } = require('../middleware/authMiddleware');
@@ -10,41 +10,48 @@ const { authMiddleware } = require('../middleware/authMiddleware');
 const deleteCloudinaryFile = async (imageUrl) => {
   if (!imageUrl || !imageUrl.includes('cloudinary')) return;
   try {
-    // Example URL: https://res.cloudinary.com/demo/image/upload/v12345/avatars/avatar-6789.png
-    const parts = imageUrl.split('/');
-    const fileNameWithExt = parts.pop();
-    const fileName = fileNameWithExt.split('.')[0];
-    const folder = parts.pop();
-    const publicId = `${folder}/${fileName}`;
+    // More robust way to get public_id: get everything between the version and the extension
+    // regex matches 'folder/filename' from a standard Cloudinary URL
+    const regex = /\/v\d+\/([^/]+\/[^.]+)\./;
+    const match = imageUrl.match(regex);
+    const publicId = match ? match[1] : null;
     
-    await cloudinary.uploader.destroy(publicId);
-    console.log(`Successfully deleted: ${publicId}`);
+    if (publicId) {
+      await cloudinary.uploader.destroy(publicId);
+      console.log(`Successfully deleted: ${publicId}`);
+    }
   } catch (err) {
     console.error(`Failed to delete Cloudinary file: ${imageUrl}`, err);
   }
 };
 
-// Cloudinary Storage Configuration for Avatars
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'avatars',
-        allowed_formats: ['jpg', 'png', 'webp', 'jpeg'],
-        transformation: [{ width: 500, height: 500, crop: 'limit' }]
-    }
-});
+// Helper to upload a buffer to Cloudinary via stream
+const streamUpload = (fileBuffer, folder) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder, transformation: [{ width: 500, height: 500, crop: 'limit' }] },
+            (error, result) => {
+                if (result) resolve(result);
+                else reject(error);
+            }
+        );
+        streamifier.createReadStream(fileBuffer).pipe(stream);
+    });
+};
 
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 2 * 1024 * 1024 }
-});
+// Multer Memory Storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage, limits: { fileSize: 2 * 1024 * 1024 } });
 
 // POST Route for Avatar Upload
 router.post('/upload-avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-        const imageUrl = req.file.path; // Secure Cloudinary URL
+        // Upload using streamifier
+        const result = await streamUpload(req.file.buffer, 'avatars');
+        const imageUrl = result.secure_url;
+
         const userId = req.user.id; // Assuming authMiddleware attaches user to req
 
         // 1. Get current avatar to delete it if it exists
