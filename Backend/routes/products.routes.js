@@ -101,11 +101,11 @@ router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxC
 router.put('/:id', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), async (req, res) => {
   try {
     const { id } = req.params;
-    const name = (req.body.name === 'null' || !req.body.name) ? null : req.body.name.trim();
-    const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : req.body.category.trim();
+    const name = (req.body.name === 'null' || !req.body.name) ? null : String(req.body.name).trim();
+    const category = (req.body.category === 'null' || !req.body.category) ? 'Uncategorized' : String(req.body.category).trim();
     const price = parseFloat(req.body.price);
     const quantity = parseInt(req.body.quantity);
-    const description = req.body.description || '';
+    const description = String(req.body.description || '').trim();
 
     // Get existing product to check for old images
     const [rows] = await db.promise().query("SELECT image, image2 FROM product WHERE id = ?", [id]);
