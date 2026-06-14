@@ -2,37 +2,37 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 const authMiddleware = require('../middleware/auth.middleware');
 const adminOnly = require('../middleware/admin.middleware');
 
-// Configure storage for product images
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../../uploads/');
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+// Cloudinary Storage Configuration for Products
+const productStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'products',
+        allowed_formats: ['jpg', 'png', 'webp', 'jpeg']
     }
-    cb(null, dir); 
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
 });
 
-const upload = multer({ 
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limit to 5MB
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|webp/;
-    const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    if (mimetype && extname) return cb(null, true);
-    cb(new Error("Only images (jpeg, png, webp) are allowed"));
+const upload = multer({ storage: productStorage });
+
+// Helper: Deletes files from Cloudinary by extracting public_id from URL
+const deleteCloudinaryFile = async (imageUrl) => {
+  if (!imageUrl || !imageUrl.includes('cloudinary')) return;
+  try {
+    // Example URL: https://res.cloudinary.com/demo/image/upload/v1/products/prod-123.png
+    const parts = imageUrl.split('/');
+    const fileNameWithExt = parts.pop();
+    const fileName = fileNameWithExt.split('.')[0];
+    const folder = parts.pop();
+    const publicId = `${folder}/${fileName}`;
+    await cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    console.error(`Deletion failed: ${imageUrl}`, err);
   }
-});
+};
 
 // admin routes
 // POST /api/products
@@ -49,8 +49,8 @@ router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxC
       return res.status(400).json({ message: "Invalid product data: Name is required, price/quantity cannot be negative." });
     }
     
-    const image = (req.files && req.files['image']) ? req.files['image'][0].filename : null;
-    const image2 = (req.files && req.files['image2']) ? req.files['image2'][0].filename : null;
+    const image = (req.files && req.files['image']) ? req.files['image'][0].path : null;
+    const image2 = (req.files && req.files['image2']) ? req.files['image2'][0].path : null;
 
     // Check if product already exists
     const [existing] = await db.promise().query("SELECT id, price FROM product WHERE name = ?", [name]);
@@ -86,7 +86,7 @@ router.post('/', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxC
 });
 
 // PUT /api/products/:id
-router.put('/:id', authMiddleware, adminOnly, async (req, res) => {
+router.put('/:id', authMiddleware, adminOnly, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), async (req, res) => {
   try {
     const { id } = req.params;
     const name = (req.body.name === 'null' || !req.body.name) ? null : req.body.name.trim();
@@ -95,9 +95,26 @@ router.put('/:id', authMiddleware, adminOnly, async (req, res) => {
     const quantity = req.body.quantity ? parseInt(req.body.quantity) : 0;
     const description = req.body.description || '';
 
-    // Sanitize image paths provided via body to prevent path traversal
-    const image = req.body.image ? path.basename(req.body.image) : null;
-    const image2 = req.body.image2 ? path.basename(req.body.image2) : null;
+    // Get existing product to check for old images
+    const [rows] = await db.promise().query("SELECT image, image2 FROM product WHERE id = ?", [id]);
+    if (rows.length === 0) return res.status(404).json({ message: "Product not found" });
+    const oldProduct = rows[0];
+
+    // Handle new uploads or keep existing paths from body
+    let image = (req.files && req.files['image']) ? req.files['image'][0].path : req.body.image;
+    let image2 = (req.files && req.files['image2']) ? req.files['image2'][0].path : req.body.image2;
+
+    // Sanitize literal 'null' strings that might come from frontend prompts
+    if (image === 'null') image = null;
+    if (image2 === 'null') image2 = null;
+
+    // Cleanup Cloudinary if images were replaced with new files
+    if (req.files && req.files['image'] && oldProduct.image) {
+      await deleteCloudinaryFile(oldProduct.image);
+    }
+    if (req.files && req.files['image2'] && oldProduct.image2) {
+      await deleteCloudinaryFile(oldProduct.image2);
+    }
 
     if (!name || price < 0) return res.status(400).json({ message: "Invalid name or price." });
 
