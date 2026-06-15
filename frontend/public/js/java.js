@@ -189,6 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     header .logo span {
         color: var(--premium-green); /* Keep accent color */
+    }
+
     .product-card {
       flex: 0 1 calc(25% - 20px);
       max-width: 300px;
