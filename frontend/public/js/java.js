@@ -119,6 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const style = document.createElement('style');
   style.textContent = `
     .product-card {
+      flex: 0 1 calc(25% - 20px);
+      max-width: 300px;
+      min-width: 250px;
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1), transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
@@ -131,11 +134,29 @@ document.addEventListener("DOMContentLoaded", () => {
       transform: translateY(-8px);
       box-shadow: 0 15px 30px rgba(0,0,0,0.12);
     }
+    .image-container {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      background: #f8f8f8;
+    }
     .main-product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transition: transform 0.5s ease;
     }
     .product-card:hover .main-product-image {
       transform: scale(1.06);
+    }
+    @media (max-width: 768px) {
+      .product-card {
+        flex: 0 1 calc(50% - 20px);
+        min-width: 150px;
+      }
+      .image-container {
+        height: 180px;
+      }
     }
   `;
   document.head.appendChild(style);

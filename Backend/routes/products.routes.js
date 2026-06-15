@@ -11,7 +11,10 @@ const adminOnly = require('../middleware/admin.middleware');
 const streamUpload = (fileBuffer, folder) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-            { folder },
+            { 
+                folder, 
+                transformation: [{ width: 800, height: 800, crop: 'limit', quality: 'auto', fetch_format: 'auto' }] 
+            },
             (error, result) => {
                 if (result) resolve(result);
                 else reject(error);
