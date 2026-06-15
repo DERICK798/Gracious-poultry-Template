@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wangarwa poultry| Enterprise Online Shop</title>
+  <title>Wangalwa Poultry | Premium E-Commerce</title>
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -27,19 +28,19 @@
 
 <!-- ✅ HERO SECTION (Combined Image and Text) -->
 <section class="hero">
-  <img src="uploads/fresh-eggs.jpg" alt="hero">
+  <img src="uploads/fresh-eggs.jpg" alt="Hero Image of Farm Fresh Eggs and Chicks">
   <div class="hero-content">
-    <h1>wangalwa chick incubators</h1>
+    <h1>Fresh from Farm to Your Door</h1>
     <p>We supply Healthy chicks, Fresh farm eggs, and Quality Meat at affordable prices.</p>
-    <button class="btn-shop-link" onclick="location.href='frontend/public/products.html'">Shop Now</button>
+    <a href="frontend/public/products.html" class="btn-shop-link hero-cta">Shop Now</a>
   </div>
 </section>
 
 <!-- ✅ SHOP CATEGORIES -->
 <section class="categories">
   <h2>Shop by Category</h2>
-<div class="product-container">
-
+  <div class="product-container category-grid">
+    <!-- Static cards for categories, mirroring product card structure -->
     <div class="product-card" data-category="chicks">
       <div class="image-container">
         <img src="uploads/avatars/avatar-1772481817747.jpg" alt="Day Old Chicks">
@@ -47,7 +48,7 @@
       </div>
   <h3>Day Old Chicks</h3>
   <p class="price">Healthy and vaccinated chicks</p>
-  <button class="btn-shop-link" onclick="location.href='products.html'">View Products</button>
+  <a href="frontend/public/products.html?category=chicks" class="btn-shop-link btn-category-view">View Products</a>
     </div>
 
     <div class="product-card" data-category="eggs">
@@ -56,9 +57,9 @@
  alt="eggs 1">
         <img src="uploads/eggs.jpg" alt="eggs 2">
       </div>
-  <h3>Fresh Eggs</h3>
-  <p class="price">Farm fresh table and fertilized eggs</p>
-  <button class="btn-shop-link" onclick="location.href='products.html'">View Products</button>
+      <h3>Fresh Eggs</h3>
+      <p class="price">Farm fresh table and fertilized eggs</p>
+      <a href="frontend/public/products.html?category=eggs" class="btn-shop-link btn-category-view">View Products</a>
     </div>
 
     <div class="product-card" data-category="meat">
@@ -67,16 +68,17 @@
         <img src="uploads/OIP-540579553.jpg" alt="Meat 2">
       </div>
       <h3>Chicken Meat</h3>
-      <p class="price">Organic and processed poultry meat</p>
-      <button class="btn-shop-link" onclick="location.href='products.html'">View Products</button>
+      <p class="price">Organic and high-quality poultry meat</p>
+      <a href="frontend/public/products.html?category=meat" class="btn-shop-link btn-category-view">View Products</a>
     </div>
   </div>
 </section>
 
 <!-- ✅ FEATURED PRODUCTS -->
 <section class="featured">
-  <div class="product-container">
-    <p>Discover our best-selling poultry products.</p>
+  <h2>Our Featured Products</h2>
+  <div class="product-container" id="featured-products-container">
+    <!-- Featured products will be loaded dynamically by java.js -->
 </div>
 </section>
 <script src="frontend/public/js/config.js"></script>
@@ -98,7 +100,7 @@
     }
   });
 </script>
-<footer>© 2025 onlineshop. All Rights Reserved.Developed and Managed By Dero</footer>
+<footer class="site-footer">© 2025 Wangalwa Poultry. All Rights Reserved. Developed by Dero</footer>
 
 </body>
 </html>

@@ -118,20 +118,55 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Inject Smooth Card Animations
   const style = document.createElement('style');
   style.textContent = `
+    /* Global Variables and Typography */
     :root {
       --premium-green: #2d6a4f;
-      --premium-gold: #d4a373;
+      --premium-accent: #e57373; /* A warm, inviting accent color */
       --premium-white: #ffffff;
-      --premium-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --premium-light-gray: #f8f9fa;
+      --premium-medium-gray: #e9ecef;
+      --premium-dark-gray: #343a40;
+      --premium-text-color: #333;
+      --premium-dark-text-color: #eee;
+      --premium-shadow-light: 0 5px 15px rgba(0, 0, 0, 0.05);
+      --premium-shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
+      --premium-shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.15);
       --premium-transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      --border-radius-lg: 12px;
+      --border-radius-md: 8px;
+      --border-radius-sm: 4px;
+      
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
     }
 
+    body {
+      color: var(--premium-text-color);
+      background-color: var(--premium-light-gray);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    body.dark-mode {
+      color: var(--premium-dark-text-color);
+      background-color: var(--premium-dark-gray);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--premium-dark-gray);
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+      color: var(--premium-dark-text-color);
+    }
+
+    /* Header */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(var(--premium-white-rgb, 255, 255, 255), 0.95); /* Slightly less blur, more solid */
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
       transition: var(--premium-transition);
     }
@@ -139,8 +174,21 @@ document.addEventListener("DOMContentLoaded", () => {
     body.dark-mode header {
       background: rgba(18, 18, 18, 0.85);
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      /* For dark mode glassmorphism */
+      background: rgba(var(--premium-dark-gray-rgb, 52, 58, 64), 0.95);
     }
-
+    
+    header .logo {
+        font-weight: 800;
+        font-size: 1.8rem; /* Slightly larger logo */
+        letter-spacing: -1px;
+        color: var(--premium-dark-gray);
+    }
+    body.dark-mode header .logo {
+        color: var(--premium-dark-text-color);
+    }
+    header .logo span {
+        color: var(--premium-green); /* Keep accent color */
     .product-card {
       flex: 0 1 calc(25% - 20px);
       max-width: 300px;
@@ -168,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     .product-card:hover {
       transform: translateY(-12px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 40px rgba(225, 212, 212, 0.65);
       border-color: var(--premium-green);
     }
 
