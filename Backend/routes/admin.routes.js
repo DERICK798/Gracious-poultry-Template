@@ -118,7 +118,10 @@ router.post('/refresh-token', async (req, res) => {
 router.get('/stats', authMiddleware, adminOnly, async (req, res) => {
   try {
     const [userRows] = await db.promise().query('SELECT COUNT(*) as total FROM users');
-    const [orderRows] = await db.promise().query('SELECT COUNT(*) as total, SUM(total) as revenue FROM orders');
+    // Adjust revenue calculation to exclude Cancelled orders
+    const [orderRows] = await db.promise().query(
+      "SELECT COUNT(*) as total, SUM(CASE WHEN status != 'Cancelled' THEN total ELSE 0 END) as revenue FROM orders"
+    );
 
     res.json({
       users: userRows[0].total,

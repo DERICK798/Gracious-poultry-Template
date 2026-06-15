@@ -94,14 +94,44 @@ router.post('/callback', async (req, res) => {
 
         // Update order status and store payment details
         const status = ResultCode === 0 ? 'Paid' : 'Cancelled';
+        let connection;
+
+        try {
+            connection = await db.promise().getConnection();
+            await connection.beginTransaction();
+
+            // Get current order info to prevent double-restocking
+            const [orderRows] = await connection.query("SELECT id, status FROM orders WHERE checkout_id = ?", [CheckoutRequestID]);
+            if (orderRows.length > 0) {
+                const order = orderRows[0];
+                
+                // Update order status and payment details
+                await connection.query(
+                    "UPDATE orders SET status = ?, mpesa_receipt = ?, result_desc = ? WHERE checkout_id = ?",
+                    [status, mpesaReceipt, ResultDesc, CheckoutRequestID]
+                );
+
+                // If payment failed (ResultCode != 0) and order wasn't already cancelled, restock inventory
+                if (ResultCode !== 0 && order.status !== 'Cancelled') {
+                    const [items] = await connection.query('SELECT product_id, quantity FROM order_items WHERE order_id = ?', [order.id]);
+                    for (const item of items) {
+                        if (item.product_id && item.quantity > 0) {
+                            await connection.query(
+                                'UPDATE product SET quantity = quantity + ? WHERE id = ?',
+                                [item.quantity, item.product_id]
+                            );
+                        }
+                    }
+                }
+            }
+            await connection.commit();
+        } catch (err) {
+            if (connection) await connection.rollback();
+            console.error('CALLBACK DB ERROR:', err);
+        } finally {
+            if (connection) connection.release();
+        }
         
-        console.log(`📡 [M-Pesa Callback] Updating Order: ID ${CheckoutRequestID} -> Status: ${status}, Receipt: ${mpesaReceipt}`);
-
-        await db.promise().query(
-            "UPDATE orders SET status = ?, mpesa_receipt = ?, result_desc = ? WHERE checkout_id = ?",
-            [status, mpesaReceipt, ResultDesc, CheckoutRequestID]
-        );
-
         res.json({ ResultCode: 0, ResultDesc: "Accepted" });
     } catch (error) {
         console.error('CALLBACK ERROR:', error);
