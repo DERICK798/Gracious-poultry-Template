@@ -115,6 +115,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ✅ Inject Smooth Card Animations
+  const style = document.createElement('style');
+  style.textContent = `
+    .product-card {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1), transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+    }
+    .product-card.reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    }
+    .main-product-image {
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover .main-product-image {
+      transform: scale(1.06);
+    }
+  `;
+  document.head.appendChild(style);
+
   fetchProducts();
 });
 
@@ -301,6 +326,12 @@ function renderProducts(products) {
       });
 
       row.appendChild(card);
+
+      // Staggered smooth entry effect
+      const currentCardsInRow = row.querySelectorAll('.product-card').length;
+      setTimeout(() => {
+        card.classList.add('reveal');
+      }, currentCardsInRow * 60);
     });
 
     categorySection.appendChild(row);
