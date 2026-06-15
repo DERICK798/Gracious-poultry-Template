@@ -14,10 +14,10 @@
   <div class="logo">WANGALWA <span>CHICK INCUBATORS</span></div>
   <nav>
     <a href="index.html" class="active">Home</a>
-    <a href="products.html">Products</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-    <a href="login.html" id="authBtn">login</a>
+    <a href="frontend/public/products.html">Products</a>
+    <a href="frontend/public/about.html">About</a>
+    <a href="frontend/public/contact.html">Contact</a>
+    <a href="frontend/public/login.html" id="authBtn">login</a>
   </nav>
 <div id="userName"></div>
   <div class="theme-toggle" id="themeToggle">
@@ -81,7 +81,7 @@
 </div>
 </section>
 <script src="frontend/public/js/config.js"></script>
-<script src="js/java.js"></script>
+<script src="frontend/public/js/java.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const authBtn = document.getElementById('authBtn');
@@ -95,7 +95,7 @@
       };
     } else {
       authBtn.textContent = 'Login';
-      authBtn.onclick = () => window.location.href = 'login.html';
+      authBtn.onclick = () => window.location.href = 'frontend/public/login.html';
     }
   });
 </script>
