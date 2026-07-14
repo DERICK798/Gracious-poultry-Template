@@ -1,6 +1,8 @@
+const path = require('path');
+require("dotenv").config({ path: path.join(__dirname, '(3).env') });
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const session = require('express-session');

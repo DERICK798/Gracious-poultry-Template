@@ -1,3 +1,5 @@
+const path = require('path');
+require("dotenv").config({ path: path.join(__dirname, '..', '(3).env') });
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
