@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wangalwa Poultry | Premium E-Commerce</title>
+  <title>Golden slice| Premium E-Commerce</title>
   <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
 <header>
-  <div class="logo" style="font-weight: 800; font-size: 1.5rem; letter-spacing: -1px;">WANGALWA <span style="color: #2d6a4f;">POULTRY</span></div>
+  <div class="logo">
+    <img src="/uploads/Golden%20Slice.png" alt="Golden Slice logo">
+    <span>GOLDEN <span class="highlight">SLICE</span></span>
+  </div>
   <nav>
     <a href="index.html" class="active">Home</a>
-    <a href="frontend/public/products.html">Products</a>
-    <a href="frontend/public/about.html">About</a>
+    <a href="products.html">Products</a>
+    <a href="about.html">About</a>
     <a href="https://wa.me/254713625389" target="_blank">Contact</a>
-    <a href="frontend/public/login.html" id="authBtn">login</a>
+    <a href="login.html" id="authBtn">login</a>
   </nav>
 <div id="userName"></div>
   <div class="theme-toggle" id="themeToggle">
@@ -28,11 +30,11 @@
 
 <!-- ✅ HERO SECTION (Combined Image and Text) -->
 <section class="hero">
-  <img src="/uploads/fresh-eggs.jpg" alt="Hero Image of Farm Fresh Eggs and Chicks">
+  <img src="/uploads/Golden%20Slice.png" alt="Hero Image of Farm Fresh Eggs and Chicks" onerror="this.onerror=null; this.style.display='none';">
   <div class="hero-content">
-    <h1>Fresh from Farm to Your Door</h1>
-    <p>We supply Healthy chicks, Fresh farm eggs, and Quality Meat at affordable prices.</p>
-    <a href="frontend/public/products.html" class="btn-shop-link hero-cta">Shop Now</a>
+    <h1>Welcome ToGolden Slice flavors</h1>
+    <p>We bake wedding cakes, Birthday cakes and other quality Snacks at affordable prices.</p>
+    <a href="products.html" class="btn-shop-link hero-cta">Shop Now</a>
   </div>
 </section>
 
@@ -43,33 +45,32 @@
     <!-- Static cards for categories, mirroring product card structure -->
     <div class="product-card" data-category="chicks">
       <div class="image-container">
-        <img src="uploads/avatars/avatar-1772481817747.jpg" alt="Day Old Chicks">
-        <img src="uploads/avatars/avatar-1772481817747.jpg" alt="Day Old Chicks">
+        <img src="/uploads/cookies.jpg" alt="Day Old Chicks">
+        <img src="uploads/cookies.jpg" alt="Day Old Chicks">
       </div>
-  <h3>Day Old Chicks</h3>
-  <p class="price">Healthy and vaccinated chicks</p>
-  <a href="frontend/public/products.html?category=chicks" class="btn-shop-link btn-category-view">View Products</a>
+      <h3>cookies</h3>
+      <p class="price">WEll baked flavors</p>
+      <a href="products.html?category=chicks" class="btn-shop-link btn-category-view">View Products</a>
     </div>
 
     <div class="product-card" data-category="eggs">
       <div class="image-container">
-        <img src="uploads/fresh-eggs.jpg"
- alt="eggs 1">
-        <img src="uploads/eggs.jpg" alt="eggs 2">
+        <img src="birtday cakes" alt="cakes 1">
+        <img src="uploads/birthday-cakes.jpg" alt="cake2">
       </div>
-      <h3>Fresh Eggs</h3>
+      <h3>Birthday cakes</h3>
       <p class="price">Farm fresh table and fertilized eggs</p>
-      <a href="frontend/public/products.html?category=eggs" class="btn-shop-link btn-category-view">View Products</a>
+      <a href="products.html?category=eggs" class="btn-shop-link btn-category-view">View Products</a>
     </div>
 
     <div class="product-card" data-category="meat">
       <div class="image-container">
-        <img src="uploads/meat.jpg" alt="Meat 1">
-        <img src="uploads/OIP-540579553.jpg" alt="Meat 2">
+        <img src="uploads/wedding cake.jpg" alt="Meat 1">
+        <img src="uploads/wedding cake.jpg" alt="Meat 2">
       </div>
-      <h3>Chicken Meat</h3>
+      <h3>Wedding cakes</h3>
       <p class="price">Organic and high-quality poultry meat</p>
-      <a href="frontend/public/products.html?category=meat" class="btn-shop-link btn-category-view">View Products</a>
+      <a href="products.html?category=meat" class="btn-shop-link btn-category-view">View Products</a>
     </div>
   </div>
 </section>
@@ -81,8 +82,8 @@
     <!-- Featured products will be loaded dynamically by java.js -->
 </div>
 </section>
-<script src="frontend/public/js/config.js"></script>
-<script src="frontend/public/js/java.js"></script>
+<script src="js/config.js"></script>
+<script src="js/java.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const authBtn = document.getElementById('authBtn');
@@ -96,7 +97,7 @@
       };
     } else {
       authBtn.textContent = 'Login';
-      authBtn.onclick = () => window.location.href = 'frontend/public/login.html';
+      authBtn.onclick = () => window.location.href = 'login.html';
     }
   });
 </script>
