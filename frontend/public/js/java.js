@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
   style.textContent = `
     /* Global Variables and Typography */
     :root {
-      --premium-green: #2d6a4f;
+      --premium-green: #e11c96;
       --premium-accent: #e57373; /* A warm, inviting accent color */
       --premium-white: #ffffff;
       --premium-light-gray: #f8f9fa;
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
       transition: var(--premium-transition);
       box-shadow: var(--premium-shadow);
       overflow: hidden;
-      border: 1px solid rgba(0,0,0,0.03);
+      border: 1px solid rgba(224, 15, 165, 0.88);
     }
 
     body.dark-mode .product-card {
